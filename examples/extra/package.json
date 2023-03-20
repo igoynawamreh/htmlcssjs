@@ -1,0 +1,9 @@
+{
+  "name": "my-awesome-theme",
+  "type": "module",
+  "scripts": {
+    "dev": "htmlcssjs dev",
+    "prod": "htmlcssjs prod",
+    "prod-preview": "htmlcssjs prod-preview"
+  }
+}

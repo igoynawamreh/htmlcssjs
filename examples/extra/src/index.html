@@ -1,0 +1,27 @@
+<%- include('@root:templates/before.ejs') -%>
+
+<div>
+  <h1><%= env.APP_TITLE %></h1>
+
+  <p>
+    <img src="@root:assets/logo/html.png" alt="HTML">
+    <img src="@root:assets/logo/css.png" alt="CSS">
+    <img data-image="js" alt="JS">
+  </p>
+
+  <ul>
+    <li>
+      <a href="~baseUrl/pages/page-one/">Go to page one</a>
+    </li>
+    <li>
+      <a href="~baseUrl/pages/page-two/">Go to page two</a>
+    </li>
+  </ul>
+
+  <p>
+    <button type="button" data-alert="appTitle" data-event="click">Click me</button>
+    <button type="button" data-alert="Hello, world!" data-event="dblclick">Double click me</button>
+  </p>
+</div>
+
+<%- include('@root:templates/after.ejs') -%>

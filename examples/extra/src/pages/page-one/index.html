@@ -1,0 +1,11 @@
+<%- include('@root:templates/before.ejs', {
+  title: 'Page one'
+}) -%>
+
+<div>
+  <h1><%= env.APP_TITLE %> / Page one</h1>
+  <p><img src="@root:assets/code.png" alt="Code"></p>
+  <p><a href="~baseUrl">Back to home</a></p>
+</div>
+
+<%- include('@root:templates/after.ejs') -%>

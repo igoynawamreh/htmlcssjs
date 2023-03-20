@@ -1,0 +1,72 @@
+{
+  "name": "htmlcssjs",
+  "version": "0.1.0",
+  "description": "The simplest, fastest and leanest way to develop HTML, CSS and JS.",
+  "author": "Igoy Nawamreh",
+  "homepage": "https://github.com/igoynawamreh/htmlcssjs#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/igoynawamreh/htmlcssjs.git"
+  },
+  "bugs": {
+    "url": "https://github.com/igoynawamreh/htmlcssjs/issues"
+  },
+  "license": "MIT",
+  "keywords": [
+    "html",
+    "css",
+    "js",
+    "theme",
+    "template",
+    "web",
+    "tool",
+    "vite"
+  ],
+  "type": "module",
+  "bin": {
+    "htmlcssjs": "bin.js"
+  },
+  "scripts": {
+    "minimal:dist:prod": "cd examples/minimal && vite build --config ../../vite.config.dist.js",
+    "minimal:preview:dev": "cd examples/minimal && vite --config ../../vite.config.preview.js",
+    "minimal:preview:prod": "cd examples/minimal && vite build --config ../../vite.config.preview.js",
+    "minimal:lib:prod": "cd examples/minimal && vite build --config ../../vite.config.lib.js",
+    "minimal:dev": "npm-run-all minimal:preview:dev",
+    "minimal:prod": "npm-run-all minimal:dist:prod minimal:preview:prod",
+    "extra:dist:prod": "cd examples/extra && vite build --config ../../vite.config.dist.js",
+    "extra:preview:dev": "cd examples/extra && vite --config ../../vite.config.preview.js",
+    "extra:preview:prod": "cd examples/extra && vite build --config ../../vite.config.preview.js",
+    "extra:lib:prod": "cd examples/extra && vite build --config ../../vite.config.lib.js",
+    "extra:dev": "npm-run-all extra:preview:dev",
+    "extra:prod": "npm-run-all extra:dist:prod extra:preview:prod",
+    "examples": "npm-run-all minimal:prod extra:prod"
+  },
+  "dependencies": {
+    "browserslist": "^4.21.5",
+    "cross-spawn": "^7.0.3",
+    "ejs": "^3.1.9",
+    "fast-glob": "^3.2.12",
+    "prettier": "^2.8.4",
+    "unconfig": "^0.3.7",
+    "vite": "^4.1.4"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.14",
+    "less": "^4.1.3",
+    "npm-run-all": "^4.1.5",
+    "sass": "^1.59.3",
+    "stylus": "^0.59.0"
+  },
+  "files": [
+    "bin.js",
+    "data.js",
+    "htmlcssjs.config.js",
+    "lib.js",
+    "vite.config.dist.js",
+    "vite.config.lib.js",
+    "vite.config.preview.js"
+  ],
+  "engines": {
+    "node": ">=16"
+  }
+}
