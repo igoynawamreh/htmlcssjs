@@ -5,8 +5,9 @@ The simplest, fastest and leanest way to develop HTML, CSS and JS. Powered by [V
 ## Key Features
 
 - Supports ESM, PostCSS, CSS Modules, Sass, Stylus, and Less out of the box.
-- Produces CSS and JS bundle and its assets. And also produces HTML pages that can be used for documentation/static site/preview your components, layouts, etc and is suitable to be served over a static hosting service.
+- Produces CSS and JS bundle and its assets. And also produces HTML pages that can be used for static site, documentation and preview page that is suitable to be served over a static hosting service.
 - Auto-organized static assets like images, fonts and other file types.
+- You can use this tool with zero-config or extend using [`htmlcssjs.config.js`](#htmlcssjsconfigjs).
 - Can easily develop themes using popular web frameworks like [Bootstrap](https://getbootstrap.com/), [Tailwind CSS](https://tailwindcss.com/), [Bulma](https://bulma.io/) and more.
 - Build your awesome HTML:CSS:JS themes!
 
@@ -24,18 +25,16 @@ npm install htmlcssjs --save-dev
 | ------- | ----------- |
 | `htmlcssjs dev` | Start dev server and rebuilds when source files have changed. |
 | `htmlcssjs prod` | Build for production. |
-| `htmlcssjs prod-preview` | Locally preview production build. It's an easy way to check if the production build looks OK in your local environment. |
 | `htmlcssjs vite` | Run Vite commands. |
 
 ### Example `package.json`
 
 ```json
 {
-  "name": "my-themes",
+  "name": "my-awesome-theme",
   "scripts": {
     "dev": "htmlcssjs dev",
     "prod": "htmlcssjs prod",
-    "prod-preview": "htmlcssjs prod-preview",
     "custom-example": "htmlcssjs vite build --config node_modules/htmlcssjs/vite.config.preview.js"
   },
   "devDependencies": {
@@ -51,47 +50,43 @@ You just need to create the `index.html` and `index.js` entry point in `src` dir
 ```text
 .
 ├── build/ # auto-generated
-|   ├── dist/
-|   |   ├── css/
-|   |   |   └── app.css
-|   |   ├── documents/
-|   |   ├── fonts/
-|   |   ├── images/
-|   |   ├── js/
-|   |   |   └── app.js
-|   |   ├── media/
-|   |   └── others/
-|   └── preview/
-|       ├── assets/
-|       |   ├── css/
-|       |   |   └── [name]-[hash].css
-|       |   ├── documents/
-|       |   ├── fonts/
-|       |   ├── images/
-|       |   ├── js/
-|       |   |   └── [name]-[hash].js
-|       |   ├── media/
-|       |   └── others/
-|       ├── example-pages/
-|       |   └── page-one/
-|       |       └── index.html
-|       └── index.html
+│   ├── dist/
+│   │   ├── css/
+│   │   ├── documents/
+│   │   ├── fonts/
+│   │   ├── images/
+│   │   ├── js/
+│   │   ├── media/
+│   │   └── others/
+│   └── preview/
+│       ├── assets/
+│       │   ├── css/
+│       │   ├── documents/
+│       │   ├── fonts/
+│       │   ├── images/
+│       │   ├── js/
+│       │   ├── media/
+│       │   └── others/
+│       ├── example-pages/
+│       │   └── page-one/
+│       │       └── index.html
+│       └── index.html
 ├── public/
 └── src/
     ├── example-files/
-    |   ├── example-images/
-    |   |   └── foo.png
-    |   ├── example-fonts/
-    |   |   └── foo.woff2
-    |   └── example-media/
-    |       └── foo.mp4
+    │   ├── example-images/
+    │   │   └── foo.png
+    │   ├── example-fonts/
+    │   │   └── foo.woff2
+    │   └── example-media/
+    │       └── foo.mp4
     ├── example-css/
-    |   └── foo.[css|module.css|scss|styl|less]
+    │   └── foo.[css|module.css|scss|styl|less]
     ├── example-js/
-    |   └── foo.js
+    │   └── foo.js
     ├── example-pages/
-    |   └── page-one/
-    |       └── index.html
+    │   └── page-one/
+    │       └── index.html
     ├── index.html
     └── index.js
 ```
@@ -126,8 +121,18 @@ Static assets:
 
 The `htmlcssjs prod` command produces `build/dist` and `build/preview` directory.
 
-- `build/dist`: The final production CSS, JS and its assets. You can use it for your app.
-- `build/preview`: The final production HTML, CSS, JS and its assets. You can use it for documentation/static site/preview your components, layouts, etc and is suitable to be served over a static hosting service.
+- `build/dist`: The final production CSS, JS and its assets (without HTML files).
+- `build/preview`: The final production HTML, CSS, JS and its assets.
+
+The difference between `build/dist` and `build/preview`:
+
+- The `build/dist` is ready-to-use production build. It can be used in your app or anywhere.
+  - You can copy all files and directories in `build/dist/` to your app.
+  - Or you can [configure](#htmlcssjsconfigjs) the `out.dist` config to match your app structure, so you can use it directly without having to copy it manually.
+- The `build/preview` is a static site, and is suitable to be served over a static hosting service.
+  - It can be used to create a static site.
+  - It can be used to document your themes, components, layouts, etc.
+  - It can be used to provide a live preview of your themes, components, layouts, etc for you or for your client.
 
 ## Guide
 
@@ -202,21 +207,21 @@ console.log(import.meta.env.APP_KEY_NAME)
 .
 └── src/
     ├── example-files/
-    |   ├── example-images/
-    |   |   └── foo.png
-    |   ├── example-fonts/
-    |   |   └── foo.woff2
-    |   └── example-media/
-    |       └── foo.mp4
+    │   ├── example-images/
+    │   │   └── foo.png
+    │   ├── example-fonts/
+    │   │   └── foo.woff2
+    │   └── example-media/
+    │       └── foo.mp4
     ├── example-css/
-    |   └── foo.css
+    │   └── foo.css
     ├── example-js/
-    |   └── foo.js
+    │   └── foo.js
     ├── example-pages/
-    |   └── page-one/
-    |       └── index.html
+    │   └── page-one/
+    │       └── index.html
     ├── html-template/
-    |   └── hero.ejs
+    │   └── hero.ejs
     ├── index.html
     └── index.js
 ```
@@ -253,13 +258,9 @@ import './example-css/foo.css'
 import { x } from './example-js/foo'
 ```
 
-#### Importing Static Assets in HTML, CSS, and JS
+#### Using Static Assets in CSS and JS
 
-```html
-<!-- src/example-pages/page-one/index.html -->
-
-<img src="@root:example-files/example-images/foo.png" alt="Image">
-```
+The path is always relative to the current file directory.
 
 ```css
 /* src/example-css/foo.css */
@@ -280,7 +281,7 @@ document.querySelector('#hero-img').src = imgUrl
 
 We uses [EJS](https://ejs.co/) for HTML templating.
 
-#### Template variables
+#### Using Variables in HTML Template
 
 You can use data from `.env` and `package.json`:
 
@@ -289,7 +290,22 @@ You can use data from `.env` and `package.json`:
 <%= pkg.keyName %>
 ```
 
+#### Using Static Assets in HTML Template
+
+```html
+<!-- src/example-pages/page-one/index.html -->
+
+<!-- Relative to the `src` directory (recommended when using modular template) -->
+<!-- Use `@root` (recommended) or `/` -->
+<img src="@root:example-files/example-images/foo.png" alt="Image">
+
+<!-- Relative to the current file directory -->
+<img src="../../example-files/example-images/foo.png" alt="Image">
+```
+
 #### Including HTML Template
+
+The path rules are the same as when using static assets above.
 
 ```html
 <!-- src/example-pages/page-one/index.html -->
@@ -302,6 +318,8 @@ You can use data from `.env` and `package.json`:
 ```
 
 #### Links Between Pages
+
+Please always use `~baseUrl`.
 
 ```html
 <!-- src/index.html -->
@@ -371,7 +389,6 @@ export default {
   },
   vitePreviewOptions: {},
   viteOptimizeOptions: {},
-  viteSsrOptions: {},
   viteSsrOptions: {},
   viteWorkerOptions: {},
   vitePlugins: []
