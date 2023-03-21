@@ -1,0 +1,8 @@
+{
+  "name": "my-awesome-lib",
+  "type": "module",
+  "scripts": {
+    "dev": "htmlcssjs dev",
+    "prod": "htmlcssjs prod"
+  }
+}
