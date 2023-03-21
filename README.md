@@ -23,7 +23,7 @@ npm install htmlcssjs --save-dev
 
 | Command | Description |
 | ------- | ----------- |
-| `htmlcssjs dev` | Start dev server and rebuilds when source files have changed. |
+| `htmlcssjs dev` | Start dev server (if `index.html` entry point exists) and rebuilds when source files have changed. |
 | `htmlcssjs prod` | Build for production. |
 | `htmlcssjs vite` | Run Vite commands. |
 
@@ -45,7 +45,7 @@ npm install htmlcssjs --save-dev
 
 ## Project Structure
 
-You just need to create the `index.html` and `index.js` entry point in `src` directory. The other files and directories can be flexibly arranged to your needs.
+You just need at least one entry point `index.html`, `index.js` and/or [`index.lib.js`](#add-library-mode) in `src` directory. The other files and directories can be flexibly arranged to your needs.
 
 ```text
 .

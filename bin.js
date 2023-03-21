@@ -19,10 +19,9 @@ if (
   (
     'dev' !== command &&
     'prod' !== command &&
-    'prod-preview' !== command &&
     'vite' !== command
   )
-  ) {
+) {
   console.log()
   console.log('Invalid command.')
   console.log()
@@ -47,7 +46,55 @@ if ('dev' === command) {
       cwd: process.cwd()
     })
   } else {
-    console.log('Missing index.html entry point.')
+    if (
+      fs.existsSync(path.resolve(
+        process.cwd(),
+        path.join(config.src.root, 'index.js')
+      ))
+    ) {
+      if (
+        fs.existsSync(path.resolve(
+          process.cwd(),
+          path.join(config.src.root, 'index.lib.js')
+        ))
+      ) {
+        spawn('nodemon', [
+          '--watch', config.src.root,
+          '--ext', '*',
+          '--exec', `vite build --config ${viteConfigDist} && vite build --config ${viteConfigLib}`
+        ], {
+          stdio: 'inherit',
+          cwd: process.cwd()
+        })
+      } else {
+        spawn('nodemon', [
+          '--watch', config.src.root,
+          '--ext', '*',
+          '--exec', `vite build --config ${viteConfigDist}`
+        ], {
+          stdio: 'inherit',
+          cwd: process.cwd()
+        })
+      }
+    } else {
+      if (
+        fs.existsSync(path.resolve(
+          process.cwd(),
+          path.join(config.src.root, 'index.lib.js')
+        ))
+      ) {
+        spawn('nodemon', [
+          '--watch', config.src.root,
+          '--ext', '*',
+          '--exec', `vite build --config ${viteConfigLib}`
+        ], {
+          stdio: 'inherit',
+          cwd: process.cwd()
+        })
+      } else {
+        console.log('Error: need at least one entry point index.html/index.js/index.lib.js')
+      }
+    }
   }
 }
 
@@ -103,22 +150,6 @@ if ('prod' === command) {
     ))
   ) {
     console.log('Error: need at least one entry point index.html/index.js/index.lib.js')
-  }
-}
-
-if ('prod-preview' === command) {
-  if (
-    fs.existsSync(path.resolve(
-      process.cwd(),
-      path.join(config.src.root, 'index.html')
-    ))
-  ) {
-    spawn('vite', ['preview', '--config', viteConfigPreview], {
-      stdio: 'inherit',
-      cwd: process.cwd()
-    })
-  } else {
-    console.log('Missing index.html entry point.')
   }
 }
 

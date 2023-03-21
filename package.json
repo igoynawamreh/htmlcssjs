@@ -39,13 +39,16 @@
     "extra:lib:prod": "cd examples/extra && vite build --config ../../vite.config.lib.js",
     "extra:dev": "npm-run-all extra:preview:dev",
     "extra:prod": "npm-run-all extra:dist:prod extra:preview:prod",
-    "examples": "npm-run-all minimal:prod extra:prod"
+    "dist-only:prod": "cd examples/dist-only && vite build --config ../../vite.config.dist.js",
+    "lib-only:prod": "cd examples/lib-only && vite build --config ../../vite.config.lib.js",
+    "examples": "npm-run-all minimal:prod extra:prod dist-only:prod lib-only:prod"
   },
   "dependencies": {
     "browserslist": "^4.21.5",
     "cross-spawn": "^7.0.3",
     "ejs": "^3.1.9",
     "fast-glob": "^3.2.12",
+    "nodemon": "^2.0.21",
     "prettier": "^2.8.4",
     "unconfig": "^0.3.7",
     "vite": "^4.1.4"
