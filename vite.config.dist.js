@@ -16,11 +16,11 @@ import {
   browserslistToEsbuild,
   chunkFileNames,
   entryFileNames,
-  htmlcssjsNoPreview,
+  htmlcssjsDist,
   newProcessEnv
 } from './lib'
 
-const plugins = [htmlcssjsNoPreview(config, pkg, false)]
+const plugins = [htmlcssjsDist(config, pkg)]
 if (
   config?.vitePlugins &&
   Array.isArray(config?.vitePlugins) &&

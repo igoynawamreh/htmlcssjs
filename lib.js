@@ -227,7 +227,7 @@ export function htmlcssjsPreview(config, pkg) {
   }
 }
 
-export function htmlcssjsNoPreview(config, pkg, jsOnly = false) {
+export function htmlcssjsDist(config, pkg) {
   let viteConfig
   return {
     name: 'htmlcssjs:dist',
@@ -237,6 +237,29 @@ export function htmlcssjsNoPreview(config, pkg, jsOnly = false) {
     closeBundle() {
       const filePaths = findFiles(
         path.resolve(process.cwd(), config.out.dist)
+      )
+      filePaths && filePaths.length && filePaths.forEach((file) => {
+        if (
+          cssJsRegExp.test(file) &&
+          !vendorRegExp.test(file)
+        ) {
+          createBanner(file, viteConfig, config, pkg)
+        }
+      })
+    }
+  }
+}
+
+export function htmlcssjsLib(config, pkg) {
+  let viteConfig
+  return {
+    name: 'htmlcssjs:dist',
+    configResolved(resolvedConfig) {
+      viteConfig = resolvedConfig
+    },
+    closeBundle() {
+      const filePaths = findFiles(
+        path.resolve(process.cwd(), config.out.lib)
       )
       filePaths && filePaths.length && filePaths.forEach((file) => {
         if (
