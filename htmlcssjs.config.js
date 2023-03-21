@@ -22,7 +22,6 @@ export default {
   vitePreviewOptions: {},
   viteOptimizeOptions: {},
   viteSsrOptions: {},
-  viteSsrOptions: {},
   viteWorkerOptions: {},
   vitePlugins: []
 }
