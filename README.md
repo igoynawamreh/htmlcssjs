@@ -23,7 +23,7 @@ npm install htmlcssjs --save-dev
 
 | Command | Description |
 | ------- | ----------- |
-| `htmlcssjs dev` | Start dev server (if `index.html` entry point exists) and rebuilds when source files have changed. |
+| `htmlcssjs dev` | Start dev (and server if `index.html` entry point exists) and rebuilds when source files have changed. |
 | `htmlcssjs prod` | Build for production. |
 | `htmlcssjs vite` | Run Vite commands. |
 
