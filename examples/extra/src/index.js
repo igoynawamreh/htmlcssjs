@@ -2,6 +2,7 @@ import './css/index.css'
 import './scss/index.scss'
 import './stylus/index.styl'
 import './less/index.less'
+import 'highlight.js/styles/github.css'
 
 import fooClasses from './css-module/foo.module.css'
 import barClasses from './css-module/bar.module.scss'
