@@ -17,11 +17,15 @@ import {
   browserslistToEsbuild,
   chunkFileNames,
   entryFileNames,
+  htmlcssjsMinifyHTML,
   htmlcssjsPreview,
   newProcessEnv
 } from './lib'
 
-const plugins = [htmlcssjsPreview(config, pkg)]
+const plugins = [
+  htmlcssjsPreview(config, pkg),
+  htmlcssjsMinifyHTML(config, pkg)
+]
 if (
   config?.vitePlugins &&
   Array.isArray(config?.vitePlugins) &&
@@ -44,7 +48,7 @@ export default ({ mode }) => {
       assetsDir: cfg.assetsDir,
       assetsInlineLimit: 0,
       cssCodeSplit: false,
-      minify: 'production' === mode,
+      minify: 'production' === mode ? config.build.minify : false,
       sourcemap: config.build.sourcemap,
       target: browserslistToEsbuild(),
       cssTarget: browserslistToEsbuild(),

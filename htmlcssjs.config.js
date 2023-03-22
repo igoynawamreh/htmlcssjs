@@ -12,6 +12,7 @@ export default {
     cssFileName: 'app',
     jsFileName: 'app',
     banner: '',
+    minify: true,
     sourcemap: false
   },
   viteSharedOptions: {},

@@ -3,6 +3,7 @@ import path from 'node:path'
 import ejs from 'ejs'
 import prettier from 'prettier'
 import browserslist from 'browserslist'
+import { minify } from 'html-minifier-terser'
 import { createRequire } from 'node:module'
 import { cfg } from './data.js'
 import { marked } from 'marked'
@@ -186,6 +187,19 @@ export function markdownRender(content) {
   return marked.parse(content)
 }
 
+export function minifyHTML(html) {
+  return minify(html, {
+    removeComments: true,
+    collapseWhitespace: true,
+    collapseBooleanAttributes: true,
+    removeAttributeQuotes: false,
+    removeEmptyAttributes: true,
+    minifyCSS: true,
+    minifyJS: true,
+    minifyURLs: true
+  })
+}
+
 export function createBanner(file, viteConfig, config, pkg) {
   let content = fs.readFileSync(file, { encoding: 'utf8' })
   let template = config?.build?.banner ?? ''
@@ -224,13 +238,13 @@ export function newProcessEnv(mode, processEnv, pkg) {
 export function htmlcssjsPreview(config, pkg) {
   let viteConfig
   return {
-    name: 'htmlcssjs:preview',
     configResolved(resolvedConfig) {
       viteConfig = resolvedConfig
     },
+    name: 'htmlcssjs:preview',
     transformIndexHtml: {
       enforce: 'pre',
-      transform(html) {
+      transform (html) {
         html = ejsRender(html, viteConfig, config, pkg)
 
         let mdPattern = new RegExp(`<:markdown:>((.|\\n)*?)</:markdown:>`)
@@ -301,6 +315,23 @@ export function htmlcssjsLib(config, pkg) {
           }
         })
       }
+    }
+  }
+}
+
+export function htmlcssjsMinifyHTML(config, pkg) {
+  let viteConfig
+  return {
+    configResolved(resolvedConfig) {
+      viteConfig = resolvedConfig
+    },
+    name: 'htmlcssjs:minify-html',
+    enforce: 'post',
+    apply: 'build',
+    transformIndexHtml: (html) => {
+      return 'production' === viteConfig.mode && config.build.minify
+        ? minifyHTML(html)
+        : html
     }
   }
 }
