@@ -5,10 +5,12 @@ import prettier from 'prettier'
 import browserslist from 'browserslist'
 import { createRequire } from 'node:module'
 import { cfg } from './data.js'
+import { marked } from 'marked'
 import { loadEnv } from 'vite'
 
 const require = createRequire(import.meta.url)
 
+export const htmlRegExp = new RegExp(/\.(html|ejs)$/i)
 export const cssRegExp = new RegExp(/\.(css)$/i)
 export const jsRegExp = new RegExp(/\.([mc]?js)$/i)
 export const cssJsRegExp = new RegExp(/\.(css|[mc]?js)$/i)
@@ -157,6 +159,33 @@ export function ejsRender(template, viteConfig, config, pkg) {
   return template
 }
 
+export function markdownRender(content) {
+  marked.setOptions({
+    async: false,
+    baseUrl: '',
+    breaks: true,
+    gfm: true,
+    headerIds: true,
+    headerPrefix: '',
+    highlight: function(code, lang) {
+      const hljs = require('highlight.js')
+      const language = hljs.getLanguage(lang) ? lang : 'plaintext'
+      return hljs.highlight(code, { language }).value
+    },
+    langPrefix: 'hljs language-',
+    mangle: true,
+    pedantic: false,
+    renderer: new marked.Renderer(),
+    sanitize: false,
+    sanitizer: null,
+    silent: false,
+    smartypants: false,
+    xhtml: false
+  })
+
+  return marked.parse(content)
+}
+
 export function createBanner(file, viteConfig, config, pkg) {
   let content = fs.readFileSync(file, { encoding: 'utf8' })
   let template = config?.build?.banner ?? ''
@@ -204,6 +233,12 @@ export function htmlcssjsPreview(config, pkg) {
       transform(html) {
         html = ejsRender(html, viteConfig, config, pkg)
 
+        let mdPattern = new RegExp(`<:markdown:>((.|\\n)*?)</:markdown:>`)
+        let mdContent = mdPattern.exec(html)
+        mdContent = mdContent[1] || null
+        mdContent = mdContent ? markdownRender(mdContent.trim()) : ''
+        html = html.replace(/<:markdown:>[\s\S]*?<\/:markdown:>/g, mdContent)
+
         html = prettier.format(html, {
           parser: 'html',
           printWidth: 1000
@@ -215,14 +250,15 @@ export function htmlcssjsPreview(config, pkg) {
       }
     },
     closeBundle() {
-      const filePaths = findFiles(
-        path.resolve(process.cwd(), config.out.preview)
-      )
-      filePaths && filePaths.length && filePaths.forEach((file) => {
-        if (cssJsRegExp.test(file) && !vendorRegExp.test(file)) {
-          createBanner(file, viteConfig, config, pkg)
-        }
-      })
+      let dir = path.resolve(process.cwd(), config.out.preview)
+      if (fs.existsSync(dir)) {
+        const filePaths = findFiles(dir)
+        filePaths && filePaths.length && filePaths.forEach((file) => {
+          if (cssJsRegExp.test(file) && !vendorRegExp.test(file)) {
+            createBanner(file, viteConfig, config, pkg)
+          }
+        })
+      }
     }
   }
 }
@@ -235,17 +271,15 @@ export function htmlcssjsDist(config, pkg) {
       viteConfig = resolvedConfig
     },
     closeBundle() {
-      const filePaths = findFiles(
-        path.resolve(process.cwd(), config.out.dist)
-      )
-      filePaths && filePaths.length && filePaths.forEach((file) => {
-        if (
-          cssJsRegExp.test(file) &&
-          !vendorRegExp.test(file)
-        ) {
-          createBanner(file, viteConfig, config, pkg)
-        }
-      })
+      let dir = path.resolve(process.cwd(), config.out.dist)
+      if (fs.existsSync(dir)) {
+        const filePaths = findFiles(dir)
+        filePaths && filePaths.length && filePaths.forEach((file) => {
+          if (cssJsRegExp.test(file) && !vendorRegExp.test(file)) {
+            createBanner(file, viteConfig, config, pkg)
+          }
+        })
+      }
     }
   }
 }
@@ -258,17 +292,15 @@ export function htmlcssjsLib(config, pkg) {
       viteConfig = resolvedConfig
     },
     closeBundle() {
-      const filePaths = findFiles(
-        path.resolve(process.cwd(), config.out.lib)
-      )
-      filePaths && filePaths.length && filePaths.forEach((file) => {
-        if (
-          cssJsRegExp.test(file) &&
-          !vendorRegExp.test(file)
-        ) {
-          createBanner(file, viteConfig, config, pkg)
-        }
-      })
+      let dir = path.resolve(process.cwd(), config.out.lib)
+      if (fs.existsSync(dir)) {
+        const filePaths = findFiles(dir)
+        filePaths && filePaths.length && filePaths.forEach((file) => {
+          if (cssJsRegExp.test(file) && !vendorRegExp.test(file)) {
+            createBanner(file, viteConfig, config, pkg)
+          }
+        })
+      }
     }
   }
 }

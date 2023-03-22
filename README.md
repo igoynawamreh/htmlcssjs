@@ -219,6 +219,7 @@ console.log(import.meta.env.APP_KEY_NAME)
     │   └── foo.js
     ├── example-pages/
     │   └── page-one/
+    │       ├── foo.png
     │       └── index.html
     ├── html-template/
     │   └── hero.ejs
@@ -281,7 +282,7 @@ document.querySelector('#hero-img').src = imgUrl
 
 We uses [EJS](https://ejs.co/) for HTML templating.
 
-#### Using Variables in HTML Template
+#### Using Variables in HTML
 
 You can use data from `.env` and `package.json`:
 
@@ -290,20 +291,21 @@ You can use data from `.env` and `package.json`:
 <%= pkg.keyName %>
 ```
 
-#### Using Static Assets in HTML Template
+#### Using Static Assets in HTML
 
 ```html
 <!-- src/example-pages/page-one/index.html -->
 
-<!-- Relative to the `src` directory (recommended when using modular template) -->
+<!-- Relative to the `src` directory -->
 <!-- Use `@root` (recommended) or `/` -->
 <img src="@root:example-files/example-images/foo.png" alt="Image">
 
 <!-- Relative to the current file directory -->
+<img src="./foo.png" alt="Image">
 <img src="../../example-files/example-images/foo.png" alt="Image">
 ```
 
-#### Including HTML Template
+#### Including file in HTML
 
 The path rules are the same as when using static assets above.
 
@@ -331,6 +333,54 @@ Please always use `~baseUrl`.
 <!-- src/example-pages/page-one/index.html -->
 
 <a href="~baseUrl">Back to home</a>
+```
+
+#### Using Markdown in HTML
+
+You can write Markdown in HTML using `:markdown:` tag.
+
+Note: You cannot use multiple `:markdown:` tags in a single file.
+
+Example:
+
+```html
+<!-- DON'T DO THIS -->
+<html>
+  <body>
+    <div>
+      <:markdown:>
+        [HTML:CSS:JS](https://github.com/igoynawamreh/htmlcssjs)
+
+        [Go to page one](~baseUrl/example-pages/page-one/)
+
+        [Back to home](~baseUrl)
+
+        ![My Image](@root:path/to/image.png)
+
+        <%- include('@root:path/to/file.md') -%>
+      </:markdown:>
+    </div>
+  </body>
+<html>
+
+<!-- DO THIS INSTEAD -->
+<html>
+  <body>
+    <div>
+<:markdown:>
+[HTML:CSS:JS](https://github.com/igoynawamreh/htmlcssjs)
+
+[Go to page one](~baseUrl/example-pages/page-one/)
+
+[Back to home](~baseUrl)
+
+![My Image](@root:path/to/image.png)
+
+<%- include('@root:path/to/file.md') -%>
+</:markdown:>
+    </div>
+  </body>
+<html>
 ```
 
 ## Add Library Mode
