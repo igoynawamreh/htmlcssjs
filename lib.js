@@ -235,7 +235,7 @@ export function htmlcssjsPreview(config, pkg) {
 
         let mdPattern = new RegExp(`<:markdown:>((.|\\n)*?)</:markdown:>`)
         let mdContent = mdPattern.exec(html)
-        mdContent = mdContent[1] || null
+        mdContent = mdContent ? mdContent[1] : null
         mdContent = mdContent ? markdownRender(mdContent.trim()) : ''
         html = html.replace(/<:markdown:>[\s\S]*?<\/:markdown:>/g, mdContent)
 
