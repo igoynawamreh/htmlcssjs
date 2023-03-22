@@ -1,4 +1,4 @@
-<%- include('@root:templates/before.ejs', {
+<%- include('/templates/before.ejs', {
   title: 'Markdown Page'
 }) -%>
 
@@ -6,9 +6,9 @@
 <:markdown:>
 # <%= env.APP_TITLE %> / Markdown Page
 
-![Code](@root:assets/code.png)
+![Code](/assets/code.png)
 
-[Back to home](~baseUrl)
+[Back to home](@baseURL)
 
 ```js
 console.log('M')
@@ -23,4 +23,4 @@ console.log('N')
 </:markdown:>
 </div>
 
-<%- include('@root:templates/after.ejs') -%>
+<%- include('/templates/after.ejs') -%>

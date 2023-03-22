@@ -1,23 +1,23 @@
-<%- include('@root:templates/before.ejs') -%>
+<%- include('/templates/before.ejs') -%>
 
 <div>
   <h1><%= env.APP_TITLE %></h1>
 
   <p>
-    <img src="@root:assets/logo/html.png" alt="HTML">
-    <img src="@root:assets/logo/css.png" alt="CSS">
+    <img src="/assets/logo/html.png" alt="HTML">
+    <img src="/assets/logo/css.png" alt="CSS">
     <img data-image="js" alt="JS">
   </p>
 
   <ul>
     <li>
-      <a href="~baseUrl/pages/page-one/">Go to page one</a>
+      <a href="@baseURL/pages/page-one/">Go to page one</a>
     </li>
     <li>
-      <a href="~baseUrl/pages/page-two/">Go to page two</a>
+      <a href="@baseURL/pages/page-two/">Go to page two</a>
     </li>
     <li>
-      <a href="~baseUrl/pages/markdown/">Go to Markdown page</a>
+      <a href="@baseURL/pages/markdown/">Go to Markdown page</a>
     </li>
   </ul>
 
@@ -27,4 +27,4 @@
   </p>
 </div>
 
-<%- include('@root:templates/after.ejs') -%>
+<%- include('/templates/after.ejs') -%>

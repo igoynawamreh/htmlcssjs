@@ -237,7 +237,7 @@ console.log(import.meta.env.APP_KEY_NAME)
 ...
 <body>
   ...
-  <script type="module" src="@root:index.js"></script>
+  <script type="module" src="./index.js"></script>
 </body>
 ...
 ```
@@ -299,8 +299,7 @@ You can use data from `.env` and `package.json`:
 <!-- src/example-pages/page-one/index.html -->
 
 <!-- Relative to the `src` directory -->
-<!-- Use `@root` (recommended) or `/` -->
-<img src="@root:example-files/example-images/foo.png" alt="Image">
+<img src="/example-files/example-images/foo.png" alt="Image">
 
 <!-- Relative to the current file directory -->
 <img src="./foo.png" alt="Image">
@@ -316,25 +315,25 @@ The path rules are the same as when using static assets above.
 
 ...
 <body>
-  <%- include('@root:html-template/hero.ejs') -%>
+  <%- include('/html-template/hero.ejs') -%>
 </body>
 ...
 ```
 
 #### Links Between Pages
 
-Please always use `~baseUrl`.
+Please always use `@baseURL`.
 
 ```html
 <!-- src/index.html -->
 
-<a href="~baseUrl/example-pages/page-one/">Go to page one</a>
+<a href="@baseURL/example-pages/page-one/">Go to page one</a>
 ```
 
 ```html
 <!-- src/example-pages/page-one/index.html -->
 
-<a href="~baseUrl">Back to home</a>
+<a href="@baseURL">Back to home</a>
 ```
 
 #### Using Markdown in HTML
@@ -353,13 +352,13 @@ Example:
       <:markdown:>
         [HTML:CSS:JS](https://github.com/igoynawamreh/htmlcssjs)
 
-        [Go to page one](~baseUrl/example-pages/page-one/)
+        [Go to page one](@baseURL/example-pages/page-one/)
 
-        [Back to home](~baseUrl)
+        [Back to home](@baseURL)
 
-        ![My Image](@root:path/to/image.png)
+        ![My Image](/path/to/image.png)
 
-        <%- include('@root:path/to/file.md') -%>
+        <%- include('/path/to/file.md') -%>
       </:markdown:>
     </div>
   </body>
@@ -372,13 +371,13 @@ Example:
 <:markdown:>
 [HTML:CSS:JS](https://github.com/igoynawamreh/htmlcssjs)
 
-[Go to page one](~baseUrl/example-pages/page-one/)
+[Go to page one](@baseURL/example-pages/page-one/)
 
-[Back to home](~baseUrl)
+[Back to home](@baseURL)
 
-![My Image](@root:path/to/image.png)
+![My Image](/path/to/image.png)
 
-<%- include('@root:path/to/file.md') -%>
+<%- include('/path/to/file.md') -%>
 </:markdown:>
     </div>
   </body>

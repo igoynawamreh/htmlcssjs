@@ -132,12 +132,9 @@ export function getPackageJson() {
 
 export function ejsRender(template, viteConfig, config, pkg) {
   if (process.env[cfg.envBaseUrlKey].endsWith('/')) {
-    template = template.replace(/\~baseUrl\//g, `~baseUrl`)
+    template = template.replace(/\@baseURL\//g, `@baseURL`)
   }
-  template = template
-    .replace(/\~baseUrl/g, `<%= env.${cfg.envBaseUrlKey} %>`)
-    .replace(/\@root:/g, '/')
-    .replace(/\@root:\//g, '/')
+  template = template.replace(/\@baseURL/g, `<%= env.${cfg.envBaseUrlKey} %>`)
 
   template = ejs.render(
     template,
@@ -153,7 +150,7 @@ export function ejsRender(template, viteConfig, config, pkg) {
     }
   )
 
-  if (template.includes('~baseUrl') || template.includes('@root:')) {
+  if (template.includes('@baseURL')) {
     template = ejsRender(template, viteConfig, config, pkg)
   }
 
