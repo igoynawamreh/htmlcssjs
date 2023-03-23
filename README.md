@@ -2,6 +2,8 @@
 
 The simplest, fastest and leanest way to develop HTML, CSS and JS. Powered by [Vite](https://vitejs.dev/).
 
+[Examples](https://github.com/igoynawamreh/htmlcssjs/tree/main/examples) · [Awesome Lists](https://github.com/igoynawamreh/htmlcssjs/blob/main/htmlcssjs.md)
+
 ## Key Features
 
 - Supports ESM, PostCSS, CSS Modules, Sass, Stylus, and Less out of the box.
@@ -229,6 +231,11 @@ console.log(import.meta.env.APP_KEY_NAME)
     └── index.js
 ```
 
+#### Paths
+
+- `/file.ext`: Relative to the `src` directory.
+- `./file.ext` and `../../file.ext`: Relative to the current file directory.
+
 #### Importing JS Entry Point (`src/index.js`) to HTML Entry Point (`src/index.html`)
 
 ```html
@@ -298,12 +305,8 @@ You can use data from `.env` and `package.json`:
 ```html
 <!-- src/example-pages/page-one/index.html -->
 
-<!-- Relative to the `src` directory -->
-<img src="/example-files/example-images/foo.png" alt="Image">
-
-<!-- Relative to the current file directory -->
 <img src="./foo.png" alt="Image">
-<img src="../../example-files/example-images/foo.png" alt="Image">
+<img src="/example-files/example-images/foo.png" alt="Image">
 ```
 
 #### Including file in HTML
@@ -344,8 +347,9 @@ Note: You cannot use multiple `:markdown:` tags in a single file.
 
 Example:
 
+**DON'T DO THIS**
+
 ```html
-<!-- DON'T DO THIS -->
 <html>
   <body>
     <div>
@@ -363,8 +367,11 @@ Example:
     </div>
   </body>
 <html>
+```
 
-<!-- DO THIS INSTEAD -->
+**DO THIS INSTEAD**
+
+```html
 <html>
   <body>
     <div>
