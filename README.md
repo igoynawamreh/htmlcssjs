@@ -2,8 +2,6 @@
 
 The simplest, fastest and leanest way to develop HTML, CSS and JS. Powered by [Vite](https://vitejs.dev/).
 
-<sub>Support this project by ⭐️ starring and sharing it.</sub>
-
 ## Key Features
 
 - Supports ESM, PostCSS, CSS Modules, Sass, Stylus, and Less out of the box.
@@ -434,16 +432,21 @@ export default {
     minify: true,
     sourcemap: false
   },
-  viteSharedOptions: {},
+  plugins: {
+    all: [],
+    dist: [],
+    preview: [],
+    lib: []
+  },
   viteServerOptions: {
     host: 'localhost',
     port: 1505
   },
+  viteSharedOptions: {},
   vitePreviewOptions: {},
   viteOptimizeOptions: {},
   viteSsrOptions: {},
-  viteWorkerOptions: {},
-  vitePlugins: []
+  viteWorkerOptions: {}
 }
 ```
 
@@ -501,10 +504,25 @@ function myVitePlugin() {
   }
 }
 
+function distPlugin() { ... }
+function previewPlugin() { ... }
+function libPlugin() { ... }
+
 export default {
-  vitePlugins: [
-    myVitePlugin(),
-    awesomeVitePlugin()
-  ]
+  plugins: {
+    all: [
+      myVitePlugin(),
+      awesomeVitePlugin()
+    ],
+    dist: [
+      distPlugin()
+    ],
+    preview: [
+      previewPlugin()
+    ],
+    lib: [
+      libPlugin()
+    ]
+  }
 }
 ```

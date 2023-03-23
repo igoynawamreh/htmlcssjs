@@ -27,11 +27,18 @@ const plugins = [
   htmlcssjsMinifyHTML(config, pkg)
 ]
 if (
-  config?.vitePlugins &&
-  Array.isArray(config?.vitePlugins) &&
-  config?.vitePlugins?.length
+  config?.plugins?.all &&
+  Array.isArray(config?.plugins?.all) &&
+  config?.plugins?.all?.length
 ) {
-  plugins.push(...config.vitePlugins)
+  plugins.push(...config.plugins.all)
+}
+if (
+  config?.plugins?.preview &&
+  Array.isArray(config?.plugins?.preview) &&
+  config?.plugins?.preview?.length
+) {
+  plugins.push(...config.plugins.preview)
 }
 
 export default ({ mode }) => {

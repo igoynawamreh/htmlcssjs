@@ -15,14 +15,19 @@ export default {
     minify: true,
     sourcemap: false
   },
-  viteSharedOptions: {},
+  plugins: {
+    all: [],
+    dist: [],
+    preview: [],
+    lib: []
+  },
   viteServerOptions: {
     host: 'localhost',
     port: 1505
   },
+  viteSharedOptions: {},
   vitePreviewOptions: {},
   viteOptimizeOptions: {},
   viteSsrOptions: {},
-  viteWorkerOptions: {},
-  vitePlugins: []
+  viteWorkerOptions: {}
 }

@@ -22,11 +22,18 @@ import {
 
 const plugins = [htmlcssjsLib(config, pkg)]
 if (
-  config?.vitePlugins &&
-  Array.isArray(config?.vitePlugins) &&
-  config?.vitePlugins?.length
+  config?.plugins?.all &&
+  Array.isArray(config?.plugins?.all) &&
+  config?.plugins?.all?.length
 ) {
-  plugins.push(...config.vitePlugins)
+  plugins.push(...config.plugins.all)
+}
+if (
+  config?.plugins?.lib &&
+  Array.isArray(config?.plugins?.lib) &&
+  config?.plugins?.lib?.length
+) {
+  plugins.push(...config.plugins.lib)
 }
 
 export default ({ mode }) => {
