@@ -3,6 +3,7 @@
   "type": "module",
   "scripts": {
     "dev": "htmlcssjs dev",
-    "prod": "htmlcssjs prod"
+    "prod": "htmlcssjs prod",
+    "preview": "htmlcssjs preview"
   }
 }
