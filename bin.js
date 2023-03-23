@@ -19,6 +19,7 @@ if (
   (
     'dev' !== command &&
     'prod' !== command &&
+    'preview' !== command &&
     'vite' !== command
   )
 ) {
@@ -29,7 +30,7 @@ if (
   console.log()
   console.log(`$ ${myPkg.name} dev (Start dev server and rebuilds when source files have changed)`)
   console.log(`$ ${myPkg.name} prod (Build for production)`)
-  console.log(`$ ${myPkg.name} prod-preview (Locally preview production build)`)
+  console.log(`$ ${myPkg.name} preview (Locally preview production build)`)
   console.log(`$ ${myPkg.name} vite (Run Vite commands)`)
   process.exit(1)
 }
@@ -150,6 +151,22 @@ if ('prod' === command) {
     ))
   ) {
     console.log('Error: need at least one entry point index.html/index.js/index.lib.js')
+  }
+}
+
+if ('preview' === command) {
+  if (
+    fs.existsSync(path.resolve(
+      process.cwd(),
+      path.join(config.src.root, 'index.html')
+    ))
+  ) {
+    spawn('vite', ['preview', '--config', viteConfigPreview], {
+      stdio: 'inherit',
+      cwd: process.cwd()
+    })
+  } else {
+    console.log('Missing index.html entry point.')
   }
 }
 

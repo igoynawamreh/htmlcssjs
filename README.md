@@ -25,6 +25,7 @@ npm install htmlcssjs --save-dev
 | ------- | ----------- |
 | `htmlcssjs dev` | Start dev (and server if `index.html` entry point exists) and rebuilds when source files have changed. |
 | `htmlcssjs prod` | Build for production. |
+| `htmlcssjs preview` | Locally preview production build (if `index.html` entry point exists). It's an easy way to check if the production build looks OK in your local environment. |
 | `htmlcssjs vite` | Run Vite commands. |
 
 ### Example `package.json`
