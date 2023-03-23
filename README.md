@@ -36,7 +36,8 @@ npm install htmlcssjs --save-dev
   "scripts": {
     "dev": "htmlcssjs dev",
     "prod": "htmlcssjs prod",
-    "custom-example": "htmlcssjs vite build --config node_modules/htmlcssjs/vite.config.preview.js"
+    "preview": "htmlcssjs preview",
+    "custom-example": "htmlcssjs vite build --config node_modules/htmlcssjs/vite.config.site.js"
   },
   "devDependencies": {
     "htmlcssjs": "..."
@@ -59,7 +60,7 @@ You just need at least one entry point `index.html`, `index.js` and/or [`index.l
 │   │   ├── js/
 │   │   ├── media/
 │   │   └── others/
-│   └── preview/
+│   └── site/
 │       ├── assets/
 │       │   ├── css/
 │       │   ├── documents/
@@ -111,7 +112,7 @@ Source code:
 
 Static assets:
 
-- When a static assets like images, fonts, etc is used in source code, it will be automatically emitted and organized to `build/dist/[file-types]/` and `build/preview/assets/[file-types]/`. Known file types:
+- When a static assets like images, fonts, etc is used in source code, it will be automatically emitted and organized to `build/dist/[file-types]/` and `build/site/assets/[file-types]/`. Known file types:
   - `documents`: `.(pdf|txt)`
   - `fonts`: `.(woff|woff2|eot|ttf|otf)`
   - `images`: `.(png|jpg|jpeg|jfif|pjpeg|pjp|gif|svg|ico|webp|avif)`
@@ -120,17 +121,17 @@ Static assets:
 
 ### The Production Build
 
-The `htmlcssjs prod` command produces `build/dist` and `build/preview` directory.
+The `htmlcssjs prod` command produces `build/dist` and `build/site` directory.
 
 - `build/dist`: The final production CSS, JS and its assets (without HTML files).
-- `build/preview`: The final production HTML, CSS, JS and its assets.
+- `build/site`: The final production HTML, CSS, JS and its assets.
 
-The difference between `build/dist` and `build/preview`:
+The difference between `build/dist` and `build/site`:
 
 - The `build/dist` is ready-to-use production build. It can be used in your app or anywhere.
   - You can copy all files and directories in `build/dist/` to your app.
   - Or you can [configure](#htmlcssjsconfigjs) the `out.dist` config to match your app structure, so you can use it directly without having to copy it manually.
-- The `build/preview` is a static site, and is suitable to be served over a static hosting service.
+- The `build/site` is a static site, and is suitable to be served over a static hosting service.
   - It can be used to create a static site.
   - It can be used to document your themes, components, layouts, etc.
   - It can be used to provide a live preview of your themes, components, layouts, etc for you or for your client.
@@ -139,7 +140,7 @@ The difference between `build/dist` and `build/preview`:
 
 ### Configure Base URL
 
-If you want to served the `build/preview` to a hosting service you must specify the `APP_BASE_URL` option in `.env` file.
+If you want to served the `build/site` to a hosting service you must specify the `APP_BASE_URL` option in `.env` file.
 
 For example, if you want to served the pages to `https://example.com/`, then set `APP_BASE_URL` to `https://example.com/` or just `/`.
 
@@ -422,8 +423,8 @@ export default {
     public: './public'
   },
   out: {
+    site: './build/site',
     dist: './build/dist',
-    preview: './build/preview',
     lib: './build/lib'
   },
   build: {
@@ -435,8 +436,8 @@ export default {
   },
   plugins: {
     all: [],
+    site: [],
     dist: [],
-    preview: [],
     lib: []
   },
   viteServerOptions: {
@@ -505,8 +506,8 @@ function myVitePlugin() {
   }
 }
 
+function sitePlugin() { ... }
 function distPlugin() { ... }
-function previewPlugin() { ... }
 function libPlugin() { ... }
 
 export default {
@@ -515,11 +516,11 @@ export default {
       myVitePlugin(),
       awesomeVitePlugin()
     ],
+    site: [
+      sitePlugin()
+    ],
     dist: [
       distPlugin()
-    ],
-    preview: [
-      previewPlugin()
     ],
     lib: [
       libPlugin()

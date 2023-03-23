@@ -18,12 +18,12 @@ import {
   chunkFileNames,
   entryFileNames,
   htmlcssjsMinifyHTML,
-  htmlcssjsPreview,
+  htmlcssjsSite,
   newProcessEnv
 } from './lib'
 
 const plugins = [
-  htmlcssjsPreview(config, pkg),
+  htmlcssjsSite(config, pkg),
   htmlcssjsMinifyHTML(config, pkg)
 ]
 if (
@@ -34,11 +34,11 @@ if (
   plugins.push(...config.plugins.all)
 }
 if (
-  config?.plugins?.preview &&
-  Array.isArray(config?.plugins?.preview) &&
-  config?.plugins?.preview?.length
+  config?.plugins?.site &&
+  Array.isArray(config?.plugins?.site) &&
+  config?.plugins?.site?.length
 ) {
-  plugins.push(...config.plugins.preview)
+  plugins.push(...config.plugins.site)
 }
 
 export default ({ mode }) => {
@@ -51,7 +51,7 @@ export default ({ mode }) => {
     envDir: process.cwd(),
     envPrefix: cfg.envPrefix,
     build: {
-      outDir: path.resolve(path.join(process.cwd(), config.out.preview)),
+      outDir: path.resolve(path.join(process.cwd(), config.out.site)),
       assetsDir: cfg.assetsDir,
       assetsInlineLimit: 0,
       cssCodeSplit: false,

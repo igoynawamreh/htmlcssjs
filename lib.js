@@ -232,13 +232,13 @@ export function newProcessEnv(mode, processEnv, pkg) {
   return processEnv
 }
 
-export function htmlcssjsPreview(config, pkg) {
+export function htmlcssjsSite(config, pkg) {
   let viteConfig
   return {
     configResolved(resolvedConfig) {
       viteConfig = resolvedConfig
     },
-    name: 'htmlcssjs:preview',
+    name: 'htmlcssjs:site',
     transformIndexHtml: {
       enforce: 'pre',
       transform (html) {
@@ -261,7 +261,7 @@ export function htmlcssjsPreview(config, pkg) {
       }
     },
     closeBundle() {
-      let dir = path.resolve(process.cwd(), config.out.preview)
+      let dir = path.resolve(process.cwd(), config.out.site)
       if (fs.existsSync(dir)) {
         const filePaths = findFiles(dir)
         filePaths && filePaths.length && filePaths.forEach((file) => {

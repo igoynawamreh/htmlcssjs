@@ -27,20 +27,20 @@
     "htmlcssjs": "bin.js"
   },
   "scripts": {
+    "minimal:site:dev": "cd examples/minimal && vite --config ../../vite.config.site.js",
+    "minimal:site:prod": "cd examples/minimal && vite build --config ../../vite.config.site.js",
     "minimal:dist:prod": "cd examples/minimal && vite build --config ../../vite.config.dist.js",
-    "minimal:preview:dev": "cd examples/minimal && vite --config ../../vite.config.preview.js",
-    "minimal:preview:prod": "cd examples/minimal && vite build --config ../../vite.config.preview.js",
     "minimal:lib:prod": "cd examples/minimal && vite build --config ../../vite.config.lib.js",
-    "minimal:dev": "npm-run-all minimal:preview:dev",
-    "minimal:prod": "npm-run-all minimal:dist:prod minimal:preview:prod",
-    "minimal:preview": "cd examples/minimal && vite preview --config ../../vite.config.preview.js",
+    "minimal:dev": "npm-run-all minimal:site:dev",
+    "minimal:prod": "npm-run-all minimal:site:prod minimal:dist:prod",
+    "minimal:preview": "cd examples/minimal && vite preview --config ../../vite.config.site.js",
+    "extra:site:dev": "cd examples/extra && vite --config ../../vite.config.site.js",
+    "extra:site:prod": "cd examples/extra && vite build --config ../../vite.config.site.js",
     "extra:dist:prod": "cd examples/extra && vite build --config ../../vite.config.dist.js",
-    "extra:preview:dev": "cd examples/extra && vite --config ../../vite.config.preview.js",
-    "extra:preview:prod": "cd examples/extra && vite build --config ../../vite.config.preview.js",
     "extra:lib:prod": "cd examples/extra && vite build --config ../../vite.config.lib.js",
-    "extra:dev": "npm-run-all extra:preview:dev",
-    "extra:prod": "npm-run-all extra:dist:prod extra:preview:prod",
-    "extra:preview": "cd examples/extra && vite preview --config ../../vite.config.preview.js",
+    "extra:dev": "npm-run-all extra:site:dev",
+    "extra:prod": "npm-run-all extra:site:prod extra:dist:prod",
+    "extra:preview": "cd examples/extra && vite preview --config ../../vite.config.site.js",
     "dist-only:prod": "cd examples/dist-only && vite build --config ../../vite.config.dist.js",
     "lib-only:prod": "cd examples/lib-only && vite build --config ../../vite.config.lib.js",
     "examples": "npm-run-all minimal:prod extra:prod dist-only:prod lib-only:prod"
@@ -72,7 +72,7 @@
     "lib.js",
     "vite.config.dist.js",
     "vite.config.lib.js",
-    "vite.config.preview.js"
+    "vite.config.site.js"
   ],
   "engines": {
     "node": ">=16"

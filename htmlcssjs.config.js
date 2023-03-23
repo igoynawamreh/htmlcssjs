@@ -4,8 +4,8 @@ export default {
     public: './public'
   },
   out: {
+    site: './build/site',
     dist: './build/dist',
-    preview: './build/preview',
     lib: './build/lib'
   },
   build: {
@@ -17,8 +17,8 @@ export default {
   },
   plugins: {
     all: [],
+    site: [],
     dist: [],
-    preview: [],
     lib: []
   },
   viteServerOptions: {

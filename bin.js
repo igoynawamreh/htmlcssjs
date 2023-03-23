@@ -8,8 +8,8 @@ import { getMyPackageJson } from './lib.js'
 
 const argv = process.argv
 const myPkg = getMyPackageJson('./package.json')
+const viteConfigSite = `node_modules/${myPkg.name}/vite.config.site.js`
 const viteConfigDist = `node_modules/${myPkg.name}/vite.config.dist.js`
-const viteConfigPreview = `node_modules/${myPkg.name}/vite.config.preview.js`
 const viteConfigLib = `node_modules/${myPkg.name}/vite.config.lib.js`
 
 const command = argv?.[2]
@@ -42,7 +42,7 @@ if ('dev' === command) {
       path.join(config.src.root, 'index.html')
     ))
   ) {
-    spawn('vite', ['--config', viteConfigPreview], {
+    spawn('vite', ['--config', viteConfigSite], {
       stdio: 'inherit',
       cwd: process.cwd()
     })
@@ -103,10 +103,10 @@ if ('prod' === command) {
   if (
     fs.existsSync(path.resolve(
       process.cwd(),
-      path.join(config.src.root, 'index.js')
+      path.join(config.src.root, 'index.html')
     ))
   ) {
-    spawn('vite', ['build', '--config', viteConfigDist], {
+    spawn('vite', ['build', '--config', viteConfigSite], {
       stdio: 'inherit',
       cwd: process.cwd()
     })
@@ -115,10 +115,10 @@ if ('prod' === command) {
   if (
     fs.existsSync(path.resolve(
       process.cwd(),
-      path.join(config.src.root, 'index.html')
+      path.join(config.src.root, 'index.js')
     ))
   ) {
-    spawn('vite', ['build', '--config', viteConfigPreview], {
+    spawn('vite', ['build', '--config', viteConfigDist], {
       stdio: 'inherit',
       cwd: process.cwd()
     })
@@ -161,7 +161,7 @@ if ('preview' === command) {
       path.join(config.src.root, 'index.html')
     ))
   ) {
-    spawn('vite', ['preview', '--config', viteConfigPreview], {
+    spawn('vite', ['preview', '--config', viteConfigSite], {
       stdio: 'inherit',
       cwd: process.cwd()
     })
