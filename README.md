@@ -270,8 +270,6 @@ import { x } from './example-js/foo'
 
 #### Using Static Assets in CSS and JS
 
-The path is always relative to the current file directory.
-
 ```css
 /* src/example-css/foo.css */
 
@@ -289,18 +287,29 @@ document.querySelector('#hero-img').src = imgUrl
 
 #### HTML Template
 
-We uses [EJS](https://ejs.co/) for HTML templating.
+We uses [EJS](https://ejs.co/) and [Pug](https://pugjs.org/) for HTML templating.
 
 #### Using Variables in HTML
 
-You can use data from `.env` and `package.json`:
+You can use data from `.env` and `package.json`.
+
+EJS:
 
 ```html
-<%= env.APP_KEY_NAME %>
-<%= pkg.keyName %>
+<p><%= env.APP_KEY_NAME %></p>
+<p><%= pkg.keyName %></p>
+```
+
+Pug:
+
+```html
+p #{env.APP_KEY_NAME}
+p #{pkg.keyName}
 ```
 
 #### Using Static Assets in HTML
+
+EJS:
 
 ```html
 <!-- src/example-pages/page-one/index.html -->
@@ -309,39 +318,60 @@ You can use data from `.env` and `package.json`:
 <img src="/example-files/example-images/foo.png" alt="Image">
 ```
 
+Pug:
+
+```html
+img(src='./foo.pug' alt='Image')
+img(src='/example-files/example-images/foo.pug' alt='Image')
+```
+
 #### Including file in HTML
 
 The path rules are the same as when using static assets above.
 
+EJS:
+
 ```html
 <!-- src/example-pages/page-one/index.html -->
 
-...
-<body>
-  <%- include('/html-template/hero.ejs') -%>
-</body>
-...
+<%- include('/html-template/hero.ejs') -%>
+```
+
+Pug:
+
+```html
+include /html-template/hero.pug
 ```
 
 #### Links Between Pages
 
-Please always use `@baseURL`.
+Please always use `<%= env.APP_BASE_URL %>/` in EJS and `env.APP_BASE_URL + '/'` in Pug.
+
+EJS:
 
 ```html
 <!-- src/index.html -->
 
-<a href="@baseURL/example-pages/page-one/">Go to page one</a>
+<a href="<%= env.APP_BASE_URL %>/example-pages/page-one/">Go to page one</a>
 ```
 
 ```html
 <!-- src/example-pages/page-one/index.html -->
 
-<a href="@baseURL">Back to home</a>
+<a href="<%= env.APP_BASE_URL %>/">Back to home</a>
 ```
 
-#### Using Markdown in HTML
+Pug:
 
-You can write Markdown in HTML using `:markdown:` tag.
+```html
+a(href=env.APP_BASE_URL + '/example-pages/page-one/') Go to page one
+
+a(href=env.APP_BASE_URL + '/') Back to home
+```
+
+#### Using Markdown in EJS Template
+
+You can write Markdown in EJS template using `:markdown:` tag. You can also use EJS syntax inside Markdown.
 
 Note: You cannot use multiple `:markdown:` tags in a single file.
 
@@ -354,15 +384,15 @@ Example:
   <body>
     <div>
       <:markdown:>
-        [HTML:CSS:JS](https://github.com/igoynawamreh/htmlcssjs)
+        # [<%= env.APP_TITLE %>](https://github.com/igoynawamreh/htmlcssjs)
 
-        [Go to page one](@baseURL/example-pages/page-one/)
+        [Go to page one](<%= env.APP_BASE_URL %>/example-pages/page-one/)
 
-        [Back to home](@baseURL)
+        [Back to home](<%= env.APP_BASE_URL %>)
 
-        ![My Image](/path/to/image.png)
+        ![My Image](./path/to/image.png)
 
-        <%- include('/path/to/file.md') -%>
+        <%- include('./path/to/file.md') -%>
       </:markdown:>
     </div>
   </body>
@@ -376,19 +406,38 @@ Example:
   <body>
     <div>
 <:markdown:>
-[HTML:CSS:JS](https://github.com/igoynawamreh/htmlcssjs)
+# [<%= env.APP_TITLE %>](https://github.com/igoynawamreh/htmlcssjs)
 
-[Go to page one](@baseURL/example-pages/page-one/)
+[Go to page one](<%= env.APP_BASE_URL %>/example-pages/page-one/)
 
-[Back to home](@baseURL)
+[Back to home](<%= env.APP_BASE_URL %>)
 
-![My Image](/path/to/image.png)
+![My Image](./path/to/image.png)
 
-<%- include('/path/to/file.md') -%>
+<%- include('./path/to/file.md') -%>
 </:markdown:>
     </div>
   </body>
 <html>
+```
+
+#### Using Markdown in Pug Template
+
+You can write Markdown in Pug template using `:markdown` filter. You can also use EJS syntax inside Markdown.
+
+```html
+:markdown
+  # [<%= env.APP_TITLE %>](https://github.com/igoynawamreh/htmlcssjs)
+
+  [Go to page one](<%= env.APP_BASE_URL %>/example-pages/page-one/)
+
+  [Back to home](<%= env.APP_BASE_URL %>)
+
+  ![My Image](./path/to/image.png)
+```
+
+```html
+:markdown(pug) include ./path/to/page.md
 ```
 
 ## Add Library Mode
@@ -483,6 +532,19 @@ const banner = `
 export default {
   build: {
     banner: banner
+  }
+}
+```
+
+You can disable `site`, `dist` and `lib` build:
+
+```js
+// htmlcssjs.config.js
+
+export default {
+  out: {
+    dist: false,
+    lib: false
   }
 }
 ```

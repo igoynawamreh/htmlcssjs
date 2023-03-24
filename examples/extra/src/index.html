@@ -1,30 +1,33 @@
-<%- include('/templates/before.ejs') -%>
+extends ./templates/simple-layout.pug
 
-<div>
-  <h1><%= env.APP_TITLE %></h1>
+block variables
+  - var title = 'Home'
 
-  <p>
-    <img src="/assets/logo/html.png" alt="HTML">
-    <img src="/assets/logo/css.png" alt="CSS">
-    <img data-image="js" alt="JS">
-  </p>
+block content
+  h1 #{env.APP_TITLE}
+  p
+    img(src='./assets/logo/html.png' alt='HTML')
+    img(src='./assets/logo/css.png' alt='CSS')
+    img(data-image='js' alt='JS')
+  ul
+    li: a(href=env.APP_BASE_URL + '/pages/page-one/') Page one
+    li: a(href=env.APP_BASE_URL + '/pages/page-two/') Page two
+  p
+    button(type='button' data-alert='appTitle' data-event='click') Click me
+    button(type='button' data-alert='Hello, world!' data-event='dblclick') Double click me
+  :markdown
+    ## Source
 
-  <ul>
-    <li>
-      <a href="@baseURL/pages/page-one/">Go to page one</a>
-    </li>
-    <li>
-      <a href="@baseURL/pages/page-two/">Go to page two</a>
-    </li>
-    <li>
-      <a href="@baseURL/pages/markdown/">Go to Markdown page</a>
-    </li>
-  </ul>
-
-  <p>
-    <button type="button" data-alert="appTitle" data-event="click">Click me</button>
-    <button type="button" data-alert="Hello, world!" data-event="dblclick">Double click me</button>
-  </p>
-</div>
-
-<%- include('/templates/after.ejs') -%>
+    ```pug
+    h1 #{env.APP_TITLE}
+    p
+      img(src='./assets/logo/html.png' alt='HTML')
+      img(src='./assets/logo/css.png' alt='CSS')
+      img(data-image='js' alt='JS')
+    ul
+      li: a(href=env.APP_BASE_URL + '/pages/page-one/') Page one
+      li: a(href=env.APP_BASE_URL + '/pages/page-two/') Page two
+    p
+      button(type='button' data-alert='appTitle' data-event='click') Click me
+      button(type='button' data-alert='Hello, world!' data-event='dblclick') Double click me
+    ```

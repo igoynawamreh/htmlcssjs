@@ -1,0 +1,10 @@
+extends ./templates/simple-layout.pug
+
+block variables
+  - var title = 'Home'
+
+block content
+  :markdown
+    # <%= env.APP_TITLE %>
+
+    ![HTML](./images/html.png) ![CSS](./images/css.png) ![JS](./images/js.png)

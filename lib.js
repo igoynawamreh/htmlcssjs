@@ -1,6 +1,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import ejs from 'ejs'
+import pug from 'pug'
 import prettier from 'prettier'
 import browserslist from 'browserslist'
 import { minify } from 'html-minifier-terser'
@@ -130,11 +131,10 @@ export function getPackageJson() {
   return pkg
 }
 
-export function ejsRender(template, viteConfig, config, pkg) {
+export function ejsRender(template, filename, viteConfig, config, pkg) {
   if (process.env[cfg.envBaseUrlKey].endsWith('/')) {
-    template = template.replace(/\@baseURL\//g, `@baseURL`)
+    process.env[cfg.envBaseUrlKey] = process.env[cfg.envBaseUrlKey].slice(0, -1)
   }
-  template = template.replace(/\@baseURL/g, `<%= env.${cfg.envBaseUrlKey} %>`)
 
   template = ejs.render(
     template,
@@ -146,18 +146,38 @@ export function ejsRender(template, viteConfig, config, pkg) {
     },
     {
       root: path.resolve(path.join(process.cwd(), config.src.root)),
+      filename: filename,
       async: false
     }
   )
 
-  if (template.includes('@baseURL')) {
-    template = ejsRender(template, viteConfig, config, pkg)
+  return template
+}
+
+export function pugRender(template, filename, viteConfig, config, pkg) {
+  if (process.env[cfg.envBaseUrlKey].endsWith('/')) {
+    process.env[cfg.envBaseUrlKey] = process.env[cfg.envBaseUrlKey].slice(0, -1)
   }
+
+  template = pug.render(template, {
+    basedir: config.src.root,
+    filename: filename,
+    env: process.env,
+    pkg: pkg,
+    filters: {
+      'markdown': function(text, options) {
+        if (options?.pug) {
+          text = pugRender(text, filename, viteConfig, config, pkg)
+        }
+        return markdownRender(text, filename, viteConfig, config, pkg)
+      }
+    }
+  })
 
   return template
 }
 
-export function markdownRender(content) {
+export function markdownRender(content, filename, viteConfig, config, pkg) {
   marked.setOptions({
     async: false,
     baseUrl: '',
@@ -181,7 +201,10 @@ export function markdownRender(content) {
     xhtml: false
   })
 
-  return marked.parse(content)
+  content = ejsRender(content, filename, viteConfig, config, pkg)
+  content = marked.parse(content)
+
+  return content
 }
 
 export function minifyHTML(html) {
@@ -200,7 +223,7 @@ export function minifyHTML(html) {
 export function createBanner(file, viteConfig, config, pkg) {
   let content = fs.readFileSync(file, { encoding: 'utf8' })
   let template = config?.build?.banner ?? ''
-  template = ejsRender(template, viteConfig, config, pkg)
+  template = ejsRender(template, file, viteConfig, config, pkg)
   template = template.trim()
   content = content.trim()
   if (jsRegExp.test(file)) {
@@ -241,13 +264,19 @@ export function htmlcssjsSite(config, pkg) {
     name: 'htmlcssjs:site',
     transformIndexHtml: {
       enforce: 'pre',
-      transform (html) {
-        html = ejsRender(html, viteConfig, config, pkg)
+      transform (html, ctx) {
+        html = ejsRender(html, ctx.filename, viteConfig, config, pkg)
+
+        try {
+          html = pugRender(html, ctx.filename, viteConfig, config, pkg)
+        } catch {}
 
         let mdPattern = new RegExp(`<:markdown:>((.|\\n)*?)</:markdown:>`)
         let mdContent = mdPattern.exec(html)
         mdContent = mdContent ? mdContent[1] : null
-        mdContent = mdContent ? markdownRender(mdContent.trim()) : ''
+        mdContent = mdContent
+          ? markdownRender(mdContent.trim(), ctx.filename, viteConfig, config, pkg)
+          : ''
         html = html.replace(/<:markdown:>[\s\S]*?<\/:markdown:>/g, mdContent)
 
         html = prettier.format(html, {

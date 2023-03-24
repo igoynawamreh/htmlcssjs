@@ -1,11 +1,23 @@
-<%- include('/templates/before.ejs', {
-  title: 'Page one'
-}) -%>
+extends /templates/simple-layout.pug
 
-<div>
-  <h1><%= env.APP_TITLE %> / Page one</h1>
-  <p><img src="/assets/code.png" alt="Code"></p>
-  <p><a href="@baseURL">Back to home</a></p>
-</div>
+block variables
+  - var title = 'Page one'
 
-<%- include('/templates/after.ejs') -%>
+block content
+  :markdown
+    # <%= env.APP_TITLE %> / Page one
+
+    ![Code](/assets/code.png)
+
+    [Back to home](<%= env.APP_BASE_URL %>/)
+
+    ```js
+    console.log('M')
+    console.log('A')
+    console.log('R')
+    console.log('K')
+    console.log('D')
+    console.log('O')
+    console.log('W')
+    console.log('N')
+    ```

@@ -1,0 +1,9 @@
+{
+  "name": "my-static-site",
+  "type": "module",
+  "scripts": {
+    "dev": "htmlcssjs dev",
+    "prod": "htmlcssjs prod",
+    "preview": "htmlcssjs preview"
+  }
+}
