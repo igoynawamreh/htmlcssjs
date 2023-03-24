@@ -40,7 +40,8 @@ if ('dev' === command) {
     fs.existsSync(path.resolve(
       process.cwd(),
       path.join(config.src.root, 'index.html')
-    ))
+    )) &&
+    false !== config.out.site
   ) {
     spawn('vite', ['--config', viteConfigSite], {
       stdio: 'inherit',
@@ -51,13 +52,15 @@ if ('dev' === command) {
       fs.existsSync(path.resolve(
         process.cwd(),
         path.join(config.src.root, 'index.js')
-      ))
+      )) &&
+      false !== config.out.dist
     ) {
       if (
         fs.existsSync(path.resolve(
           process.cwd(),
           path.join(config.src.root, 'index.lib.js')
-        ))
+        )) &&
+        false !== config.out.lib
       ) {
         spawn('nodemon', [
           '--watch', config.src.root,
@@ -82,7 +85,8 @@ if ('dev' === command) {
         fs.existsSync(path.resolve(
           process.cwd(),
           path.join(config.src.root, 'index.lib.js')
-        ))
+        )) &&
+        false !== config.out.lib
       ) {
         spawn('nodemon', [
           '--watch', config.src.root,
@@ -92,10 +96,36 @@ if ('dev' === command) {
           stdio: 'inherit',
           cwd: process.cwd()
         })
-      } else {
-        console.log('Error: need at least one entry point index.html/index.js/index.lib.js')
       }
     }
+  }
+
+  if (
+    !fs.existsSync(path.resolve(
+      process.cwd(),
+      path.join(config.src.root, 'index.html')
+    )) &&
+    !fs.existsSync(path.resolve(
+      process.cwd(),
+      path.join(config.src.root, 'index.js')
+    )) &&
+    !fs.existsSync(path.resolve(
+      process.cwd(),
+      path.join(config.src.root, 'index.lib.js')
+    )) &&
+    false !== config.out.site &&
+    false !== config.out.dist &&
+    false !== config.out.lib
+  ) {
+    console.log('Error: need at least one entry point index.html/index.js/index.lib.js')
+  }
+
+  if (
+    false === config.out.site &&
+    false === config.out.dist &&
+    false === config.out.lib
+  ) {
+    console.log('All config.out are disabled')
   }
 }
 
@@ -104,7 +134,8 @@ if ('prod' === command) {
     fs.existsSync(path.resolve(
       process.cwd(),
       path.join(config.src.root, 'index.html')
-    ))
+    )) &&
+    false !== config.out.site
   ) {
     spawn('vite', ['build', '--config', viteConfigSite], {
       stdio: 'inherit',
@@ -116,7 +147,8 @@ if ('prod' === command) {
     fs.existsSync(path.resolve(
       process.cwd(),
       path.join(config.src.root, 'index.js')
-    ))
+    )) &&
+    false !== config.out.dist
   ) {
     spawn('vite', ['build', '--config', viteConfigDist], {
       stdio: 'inherit',
@@ -128,7 +160,8 @@ if ('prod' === command) {
     fs.existsSync(path.resolve(
       process.cwd(),
       path.join(config.src.root, 'index.lib.js')
-    ))
+    )) &&
+    false !== config.out.lib
   ) {
     spawn('vite', ['build', '--config', viteConfigLib], {
       stdio: 'inherit',
@@ -148,9 +181,20 @@ if ('prod' === command) {
     !fs.existsSync(path.resolve(
       process.cwd(),
       path.join(config.src.root, 'index.lib.js')
-    ))
+    )) &&
+    false !== config.out.site &&
+    false !== config.out.dist &&
+    false !== config.out.lib
   ) {
     console.log('Error: need at least one entry point index.html/index.js/index.lib.js')
+  }
+
+  if (
+    false === config.out.site &&
+    false === config.out.dist &&
+    false === config.out.lib
+  ) {
+    console.log('All config.out are disabled')
   }
 }
 
@@ -159,14 +203,27 @@ if ('preview' === command) {
     fs.existsSync(path.resolve(
       process.cwd(),
       path.join(config.src.root, 'index.html')
-    ))
+    )) &&
+    false !== config.out.site
   ) {
     spawn('vite', ['preview', '--config', viteConfigSite], {
       stdio: 'inherit',
       cwd: process.cwd()
     })
-  } else {
+  }
+
+  if (
+    !fs.existsSync(path.resolve(
+      process.cwd(),
+      path.join(config.src.root, 'index.html')
+    )) &&
+    false !== config.out.site
+  ) {
     console.log('Missing index.html entry point.')
+  }
+
+  if (false === config.out.site) {
+    console.log('The config.out.site is disabled')
   }
 }
 
