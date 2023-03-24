@@ -388,7 +388,7 @@ Example:
 
         [Go to page one](<%= env.APP_BASE_URL %>/example-pages/page-one/)
 
-        [Back to home](<%= env.APP_BASE_URL %>)
+        [Back to home](<%= env.APP_BASE_URL %>/)
 
         ![My Image](./path/to/image.png)
 
@@ -410,7 +410,7 @@ Example:
 
 [Go to page one](<%= env.APP_BASE_URL %>/example-pages/page-one/)
 
-[Back to home](<%= env.APP_BASE_URL %>)
+[Back to home](<%= env.APP_BASE_URL %>/)
 
 ![My Image](./path/to/image.png)
 
@@ -431,7 +431,7 @@ You can write Markdown in Pug template using `:markdown` filter. You can also us
 
   [Go to page one](<%= env.APP_BASE_URL %>/example-pages/page-one/)
 
-  [Back to home](<%= env.APP_BASE_URL %>)
+  [Back to home](<%= env.APP_BASE_URL %>/)
 
   ![My Image](./path/to/image.png)
 ```
