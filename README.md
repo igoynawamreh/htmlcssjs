@@ -191,10 +191,16 @@ Only variables prefixed with `APP_` are exposed.
 
 The env variables is only accessible in HTML and JS.
 
-HTML:
+HTML (EJS):
 
 ```html
 <p><%= env.APP_KEY_NAME %></p>
+```
+
+HTML (Pug):
+
+```html
+p #{env.APP_KEY_NAME}
 ```
 
 JS:
@@ -345,28 +351,60 @@ include /html-template/hero.pug
 
 #### Links Between Pages
 
-Please always use `<%= env.APP_BASE_URL %>/` in EJS and `env.APP_BASE_URL + '/'` in Pug.
+Links in HTML page will be auto-resolved based on the `APP_BASE_URL` value. Let's say the value of `APP_BASE_URL` in `.env` file is `https://example.com/docs/`.
 
-EJS:
+Paths:
+
+- `/path/to/file.html`: Relative to the `src` directory.
+- `./path/to/file.html` and `../../path/to/file.html`: Relative to the current file directory.
+- `/path/to/`: Same as `/path/to/index.html`
 
 ```html
 <!-- src/index.html -->
 
-<a href="<%= env.APP_BASE_URL %>/example-pages/page-one/">Go to page one</a>
+<!-- Input -->
+
+<a class="1" href="/">Home</a>
+<a class="1" href="/index.html">Home</a>
+<a class="1" href="./index.html">Home</a>
+
+<a class="2" href="/pages/page-one/">Page One</a>
+<a class="2" href="/pages/page-one/index.html">Page One</a>
+<a class="2" href="./pages/page-one/">Page One</a>
+<a class="2" href="./pages/page-one/index.html">Page One</a>
+
+<a class="3" href="/pages/page-one/foo.html">Page One / Foo</a>
+<a class="3" href="./pages/page-one/foo.html">Page One / Foo</a>
+
+<!-- Output -->
+<a class="1" href="https://example.com/docs/">Home</a>
+<a class="2" href="https://example.com/docs/pages/page-one/">Page One</a>
+<a class="3" href="https://example.com/docs/pages/page-one/foo.html">Page One / Foo</a>
 ```
 
 ```html
-<!-- src/example-pages/page-one/index.html -->
+<!-- src/pages/page-one/index.html -->
 
-<a href="<%= env.APP_BASE_URL %>/">Back to home</a>
-```
+<!-- Input -->
 
-Pug:
+<a class="1" href="/">Home</a>
+<a class="1" href="/index.html">Home</a>
+<a class="1" href="../../index.html">Home</a>
 
-```html
-a(href=env.APP_BASE_URL + '/example-pages/page-one/') Go to page one
+<a class="2" href="/pages/page-two/foo/">Page Two / Foo</a>
+<a class="2" href="/pages/page-two/foo/index.html">Page Two / Foo</a>
+<a class="2" href="../page-two/foo/">Page Two / Foo</a>
+<a class="2" href="../page-two/foo/index.html">Page Two / Foo</a>
 
-a(href=env.APP_BASE_URL + '/') Back to home
+<a class="3" href="/pages/page-one/bar/">Page One / Bar</a>
+<a class="3" href="/pages/page-one/bar/index.html">Page One / Bar</a>
+<a class="3" href="./bar/">Page One / Bar</a>
+<a class="3" href="./bar/index.html">Page One / Bar</a>
+
+<!-- Output -->
+<a class="1" href="https://example.com/docs/">Home</a>
+<a class="2" href="https://example.com/docs/pages/page-two/foo/">Page Two / Foo</a>
+<a class="3" href="https://example.com/docs/pages/page-one/bar/">Page One / Bar</a>
 ```
 
 #### Using Markdown in EJS Template
@@ -386,9 +424,9 @@ Example:
       <:markdown:>
         # [<%= env.APP_TITLE %>](https://github.com/igoynawamreh/htmlcssjs)
 
-        [Go to page one](<%= env.APP_BASE_URL %>/example-pages/page-one/)
+        [Go to page one](/example-pages/page-one/)
 
-        [Back to home](<%= env.APP_BASE_URL %>/)
+        [Back to home](/)
 
         ![My Image](./path/to/image.png)
 
@@ -408,9 +446,9 @@ Example:
 <:markdown:>
 # [<%= env.APP_TITLE %>](https://github.com/igoynawamreh/htmlcssjs)
 
-[Go to page one](<%= env.APP_BASE_URL %>/example-pages/page-one/)
+[Go to page one](/example-pages/page-one/)
 
-[Back to home](<%= env.APP_BASE_URL %>/)
+[Back to home](/)
 
 ![My Image](./path/to/image.png)
 
@@ -429,9 +467,9 @@ You can write Markdown in Pug template using `:markdown` filter. You can also us
 :markdown
   # [<%= env.APP_TITLE %>](https://github.com/igoynawamreh/htmlcssjs)
 
-  [Go to page one](<%= env.APP_BASE_URL %>/example-pages/page-one/)
+  [Go to page one](/example-pages/page-one/)
 
-  [Back to home](<%= env.APP_BASE_URL %>/)
+  [Back to home](/)
 
   ![My Image](./path/to/image.png)
 ```

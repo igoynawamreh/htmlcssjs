@@ -132,10 +132,6 @@ export function getPackageJson() {
 }
 
 export function ejsRender(template, filename, viteConfig, config, pkg) {
-  if (process.env[cfg.envBaseUrlKey].endsWith('/')) {
-    process.env[cfg.envBaseUrlKey] = process.env[cfg.envBaseUrlKey].slice(0, -1)
-  }
-
   template = ejs.render(
     template,
     {
@@ -155,10 +151,6 @@ export function ejsRender(template, filename, viteConfig, config, pkg) {
 }
 
 export function pugRender(template, filename, viteConfig, config, pkg) {
-  if (process.env[cfg.envBaseUrlKey].endsWith('/')) {
-    process.env[cfg.envBaseUrlKey] = process.env[cfg.envBaseUrlKey].slice(0, -1)
-  }
-
   template = pug.render(template, {
     basedir: config.src.root,
     filename: filename,
@@ -274,10 +266,67 @@ export function htmlcssjsSite(config, pkg) {
         let mdPattern = new RegExp(`<:markdown:>((.|\\n)*?)</:markdown:>`)
         let mdContent = mdPattern.exec(html)
         mdContent = mdContent ? mdContent[1] : null
-        mdContent = mdContent
+        mdContent = (
+          mdContent
           ? markdownRender(mdContent.trim(), ctx.filename, viteConfig, config, pkg)
           : ''
+        )
         html = html.replace(/<:markdown:>[\s\S]*?<\/:markdown:>/g, mdContent)
+
+        html = html.replace(
+          /(<a\s*[^>]*(href="([^>^\"]*)")[^>]*>)([^<]+)(<\/a>)/gi,
+          (full, start, href, url, text, end) => {
+            const base = process.env.APP_BASE_URL
+            const filename = ctx.filename.replace(/\\/g, '/')
+            const cwd = process.cwd().replace(/\\/g, '/')
+            const fileDir = path.dirname(filename)
+              .split(cwd)[1]
+              .substring(1)
+              .replace(/\\/g, '/')
+
+            if (url.startsWith('.')) {
+              let urlToFilePath = path.resolve(fileDir, url)
+              let urlPath = path.relative(
+                path.join(fileDir.split('/')[0]),
+                urlToFilePath
+              ).replace(/\\/g, '/')
+              let urlSep = (
+                !base.endsWith('/') && !urlPath.startsWith('/')
+                ? '/'
+                : ''
+              )
+              let newUrl = (base + urlSep + urlPath)
+              if (!newUrl.endsWith('.html') && !newUrl.endsWith('/')) {
+                newUrl = newUrl + '/'
+              }
+              if (newUrl.endsWith('index.html')) {
+                newUrl = path.dirname(newUrl) + '/'
+              }
+              if (newUrl.endsWith('//')) {
+                newUrl = newUrl.slice(0, -2)
+              }
+              full = full.replace(url, newUrl)
+            } else if (url.startsWith('/')) {
+              let newUrl = (
+                base.endsWith('/')
+                ? (base.slice(0, -1) + url)
+                : (base + url)
+              )
+              if (!newUrl.endsWith('.html') && !newUrl.endsWith('/')) {
+                newUrl = newUrl + '/'
+              }
+              if (newUrl.endsWith('index.html')) {
+                newUrl = path.dirname(newUrl) + '/'
+              }
+              if (newUrl.endsWith('//')) {
+                newUrl = newUrl.slice(0, -2)
+              }
+              full = full.replace(url, newUrl)
+            }
+
+            return full
+          }
+        )
 
         html = prettier.format(html, {
           parser: 'html',
@@ -355,9 +404,11 @@ export function htmlcssjsMinifyHTML(config, pkg) {
     enforce: 'post',
     apply: 'build',
     transformIndexHtml: (html) => {
-      return 'production' === viteConfig.mode && config.build.minify
+      return (
+        'production' === viteConfig.mode && config.build.minify
         ? minifyHTML(html)
         : html
+      )
     }
   }
 }
