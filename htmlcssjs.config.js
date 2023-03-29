@@ -33,7 +33,7 @@ export default {
       minify: true,
       distFormat: 'umd',
       libFormats: ['es', 'umd'],
-      name: undefined, // default: (pkg?.name ?? 'app')
+      name: undefined, // default: (pkg.name.replace(/-/g, '_') ?? 'app')
       external: [],
       globals: {}
     },
