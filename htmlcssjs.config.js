@@ -4,30 +4,57 @@ export default {
     public: './public'
   },
   out: {
-    site: './build/site',
-    dist: './build/dist',
-    lib: './build/lib'
+    dest: {
+      site: './build/site',
+      dist: './build/dist',
+      lib: './build/lib'
+    },
+    clean: {
+      site: true,
+      dist: true,
+      lib: true
+    }
   },
   build: {
-    cssFileName: 'app',
-    jsFileName: 'app',
-    banner: '',
-    minify: true,
-    sourcemap: false
+    html: {
+      banner: '',
+      minify: true
+    },
+    css: {
+      filename: 'app',
+      hash: false,
+      banner: '',
+      minify: true
+    },
+    js: {
+      filename: 'app',
+      hash: false,
+      banner: '',
+      minify: true,
+      distFormat: 'umd',
+      libFormats: ['es', 'umd'],
+      name: undefined, // default: (pkg?.name ?? 'app')
+      external: [],
+      globals: {}
+    },
+    assets: {
+      hash: false
+    }
   },
-  plugins: {
-    all: [],
+  vitePlugins: {
     site: [],
     dist: [],
     lib: []
   },
-  viteServerOptions: {
-    host: 'localhost',
-    port: 1505
-  },
-  viteSharedOptions: {},
-  vitePreviewOptions: {},
-  viteOptimizeOptions: {},
-  viteSsrOptions: {},
-  viteWorkerOptions: {}
+  viteOptions: {
+    shared: {},
+    preview: {},
+    server: {
+      host: 'localhost',
+      port: 1505
+    },
+    optimize: {},
+    ssr: {},
+    worker: {}
+  }
 }

@@ -39,7 +39,7 @@
     "extra:dist:prod": "cd examples/extra && vite build --config ../../vite.config.dist.js",
     "extra:lib:prod": "cd examples/extra && vite build --config ../../vite.config.lib.js",
     "extra:dev": "npm-run-all extra:site:dev",
-    "extra:prod": "npm-run-all extra:site:prod extra:dist:prod",
+    "extra:prod": "npm-run-all extra:site:prod extra:dist:prod extra:lib:prod",
     "extra:preview": "cd examples/extra && vite preview --config ../../vite.config.site.js",
     "simple-static-site:dev": "cd examples/simple-static-site && vite --config ../../vite.config.site.js",
     "simple-static-site:prod": "cd examples/simple-static-site && vite build --config ../../vite.config.site.js",
@@ -60,7 +60,7 @@
     "prettier": "^2.8.4",
     "pug": "^3.0.2",
     "unconfig": "^0.3.7",
-    "vite": "^4.1.4"
+    "vite": "^4.2.0"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.14",

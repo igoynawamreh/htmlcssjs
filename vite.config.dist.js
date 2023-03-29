@@ -3,13 +3,7 @@ import { defineConfig } from 'vite'
 import {
   cfg,
   config,
-  pkg,
-  viteOptimizeOptions,
-  vitePreviewOptions,
-  viteServerOptions,
-  viteSharedOptions,
-  viteSsrOptions,
-  viteWorkerOptions
+  pkg
 } from './data'
 import {
   assetFileNames,
@@ -17,23 +11,22 @@ import {
   chunkFileNames,
   entryFileNames,
   htmlcssjsDist,
-  newProcessEnv
+  newProcessEnv,
+  viteOptimizeOptions,
+  vitePreviewOptions,
+  viteServerOptions,
+  viteSharedOptions,
+  viteSsrOptions,
+  viteWorkerOptions
 } from './lib'
 
 const plugins = [htmlcssjsDist(config, pkg)]
 if (
-  config?.plugins?.all &&
-  Array.isArray(config?.plugins?.all) &&
-  config?.plugins?.all?.length
+  config.vitePlugins.dist &&
+  Array.isArray(config.vitePlugins.dist) &&
+  config.vitePlugins.dist.length
 ) {
-  plugins.push(...config.plugins.all)
-}
-if (
-  config?.plugins?.dist &&
-  Array.isArray(config?.plugins?.dist) &&
-  config?.plugins?.dist?.length
-) {
-  plugins.push(...config.plugins.dist)
+  plugins.push(...config.vitePlugins.dist)
 }
 
 export default ({ mode }) => {
@@ -46,38 +39,43 @@ export default ({ mode }) => {
     envDir: process.cwd(),
     envPrefix: cfg.envPrefix,
     build: {
-      outDir: path.resolve(path.join(process.cwd(), config.out.dist)),
+      outDir: path.resolve(path.join(process.cwd(), config.out.dest.dist)),
       assetsDir: cfg.assetsDir,
       assetsInlineLimit: 0,
       cssCodeSplit: false,
-      minify: 'production' === mode ? config.build.minify : false,
-      sourcemap: config.build.sourcemap,
+      minify: 'production' === mode ? config.build.js.minify : false,
+      cssMinify: 'production' === mode ? config.build.css.minify : false,
+      sourcemap: false,
       target: browserslistToEsbuild(),
       cssTarget: browserslistToEsbuild(),
       rollupOptions: {
-        input: path.resolve(process.cwd(), path.join(config.src.root, 'index.js')),
+        input: path.resolve(
+          process.cwd(), path.join(config.src.root, 'index.js')
+        ),
+        external: config.build.js.external,
         output: {
-          format: 'umd',
+          format: config.build.js.distFormat,
+          globals: config.build.js.globals,
           entryFileNames: (chunkInfo) => {
-            return entryFileNames(chunkInfo, config, false, false, 'named')
+            return entryFileNames(chunkInfo, config, 'dist')
           },
           chunkFileNames: (chunkInfo) => {
-            return chunkFileNames(chunkInfo, config, false, false, 'named')
+            return chunkFileNames(chunkInfo, config, 'dist')
           },
           assetFileNames: (assetInfo) => {
-            return assetFileNames(assetInfo, config, false, 'named')
+            return assetFileNames(assetInfo, config, 'dist')
           }
         }
       },
       copyPublicDir: false,
-      emptyOutDir: true
+      emptyOutDir: config.out.clean.dist
     },
     plugins: plugins,
-    ...viteSharedOptions,
-    ...(config?.viteServerOptions && { server: viteServerOptions }),
-    ...(config?.vitePreviewOptions && { preview: vitePreviewOptions }),
-    ...(config?.viteOptimizeOptions && { optimizeDeps: viteOptimizeOptions }),
-    ...(config?.viteSsrOptions && { ssr: viteSsrOptions }),
-    ...(config?.viteWorkerOptions && { worker: viteWorkerOptions })
+    ...viteSharedOptions(config.viteOptions.shared),
+    preview: vitePreviewOptions(config.viteOptions.preview),
+    server: viteServerOptions(config.viteOptions.server),
+    optimizeDeps: viteOptimizeOptions(config.viteOptions.optimize),
+    ssr: viteSsrOptions(config.viteOptions.ssr),
+    worker: viteWorkerOptions(config.viteOptions.worker)
   })
 }

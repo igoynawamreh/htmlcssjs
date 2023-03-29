@@ -3,37 +3,28 @@ import { defineConfig } from 'vite'
 import {
   cfg,
   config,
-  pkg,
+  pkg
+} from './data'
+import {
+  assetFileNames,
+  browserslistToEsbuild,
+  htmlcssjsLib,
+  newProcessEnv,
   viteOptimizeOptions,
   vitePreviewOptions,
   viteServerOptions,
   viteSharedOptions,
   viteSsrOptions,
   viteWorkerOptions
-} from './data'
-import {
-  assetFileNames,
-  browserslistToEsbuild,
-  chunkFileNames,
-  entryFileNames,
-  htmlcssjsLib,
-  newProcessEnv
 } from './lib'
 
 const plugins = [htmlcssjsLib(config, pkg)]
 if (
-  config?.plugins?.all &&
-  Array.isArray(config?.plugins?.all) &&
-  config?.plugins?.all?.length
+  config.vitePlugins.lib &&
+  Array.isArray(config.vitePlugins.lib) &&
+  config.vitePlugins.lib.length
 ) {
-  plugins.push(...config.plugins.all)
-}
-if (
-  config?.plugins?.lib &&
-  Array.isArray(config?.plugins?.lib) &&
-  config?.plugins?.lib?.length
-) {
-  plugins.push(...config.plugins.lib)
+  plugins.push(...config.vitePlugins.lib)
 }
 
 export default ({ mode }) => {
@@ -46,44 +37,57 @@ export default ({ mode }) => {
     envDir: process.cwd(),
     envPrefix: cfg.envPrefix,
     build: {
-      outDir: path.resolve(path.join(process.cwd(), config.out.lib)),
+      outDir: path.resolve(path.join(process.cwd(), config.out.dest.lib)),
       assetsDir: cfg.assetsDir,
       assetsInlineLimit: 0,
       cssCodeSplit: false,
-      minify: 'production' === mode ? config.build.minify : false,
-      sourcemap: config.build.sourcemap,
+      minify: 'production' === mode ? config.build.js.minify : false,
+      cssMinify: 'production' === mode ? config.build.css.minify : false,
+      sourcemap: false,
       target: browserslistToEsbuild(),
       cssTarget: browserslistToEsbuild(),
       lib: {
-        entry: path.resolve(process.cwd(), path.join(config.src.root, 'index.lib.js')),
-        formats: ['es', 'umd'],
-        name: pkg?.name ?? 'lib'
+        entry: path.resolve(
+          process.cwd(), path.join(config.src.root, 'index.lib.js')
+        ),
+        formats: config.build.js.libFormats,
+        name: config.build.js.name ?? (pkg?.name ? pkg.name.replace(/-/g, '_') : 'app'),
+        fileName: (format) => {
+          let hash = ''
+          if (true === config.build.js.hash) {
+            hash = '-[hash]'
+          }
+          if ('es' === format || 'esm' === format) {
+            return `js/${config.build.js.filename}${hash}.esm.js`
+          } else if ('cjs' === format) {
+            return `js/${config.build.js.filename}${hash}.cjs.js`
+          } else if ('umd' === format) {
+            return `js/${config.build.js.filename}${hash}.umd.js`
+          } else if ('iife' === format) {
+            return `js/${config.build.js.filename}${hash}.iife.js`
+          } else {
+            return `js/${config.build.js.filename}${hash}.${format}.js`
+          }
+        }
       },
       rollupOptions: {
+        external: config.build.js.external,
         output: {
-          entryFileNames: (chunkInfo) => {
-            return entryFileNames(chunkInfo, config, true, false, 'named')
-          },
-          chunkFileNames: (chunkInfo) => {
-            return chunkFileNames(chunkInfo, config, true, false, 'named')
-          },
+          globals: config.build.js.globals,
           assetFileNames: (assetInfo) => {
-            return assetFileNames(assetInfo, config, false, 'named')
+            return assetFileNames(assetInfo, config, 'lib')
           }
         }
       },
       copyPublicDir: false,
-      emptyOutDir: true
-    },
-    esbuild: {
-      minifyIdentifiers: true
+      emptyOutDir: config.out.clean.lib
     },
     plugins: plugins,
-    ...viteSharedOptions,
-    ...(config?.viteServerOptions && { server: viteServerOptions }),
-    ...(config?.vitePreviewOptions && { preview: vitePreviewOptions }),
-    ...(config?.viteOptimizeOptions && { optimizeDeps: viteOptimizeOptions }),
-    ...(config?.viteSsrOptions && { ssr: viteSsrOptions }),
-    ...(config?.viteWorkerOptions && { worker: viteWorkerOptions })
+    ...viteSharedOptions(config.viteOptions.shared),
+    preview: vitePreviewOptions(config.viteOptions.preview),
+    server: viteServerOptions(config.viteOptions.server),
+    optimizeDeps: viteOptimizeOptions(config.viteOptions.optimize),
+    ssr: viteSsrOptions(config.viteOptions.ssr),
+    worker: viteWorkerOptions(config.viteOptions.worker)
   })
 }

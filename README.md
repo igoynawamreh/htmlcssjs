@@ -132,7 +132,7 @@ The difference between `build/dist` and `build/site`:
 
 - The `build/dist` is ready-to-use production build. It can be used in your app or anywhere.
   - You can copy all files and directories in `build/dist/` to your app.
-  - Or you can [configure](#htmlcssjsconfigjs) the `out.dist` config to match your app structure, so you can use it directly without having to copy it manually.
+  - Or you can [configure](#htmlcssjsconfigjs) the `out.dest.dist` config option to match your app structure, so you can use it directly without having to copy it manually.
 - The `build/site` is a static site, and is suitable to be served over a static hosting service.
   - It can be used to create a static site.
   - It can be used to document your themes, components, layouts, etc.
@@ -482,11 +482,19 @@ You can write Markdown in Pug template using `:markdown` filter. You can also us
 
 Create `index.lib.js` file in the `src` directory to create library. Now, the `htmlcssjs prod` command will produces `build/lib` directory.
 
-The library mode produces `ES` and `UMD` format.
+By default, the library mode produces `ES` and `UMD` format. You can override the default config in [`htmlcssjs.config.js`](#htmlcssjsconfigjs) to change the formats:
 
-Note that when using static assets in library mode, the asset will be inlined (not emitted/extracted).
+```js
+...
+build: {
+  js: {
+    libFormats: ['es', 'cjs', 'umd', 'iife']
+  }
+}
+...
+```
 
-Example:
+Note that when using static assets in library mode, the asset will be inlined (not emitted/extracted), for example:
 
 ```js
 // src/index.lib.js
@@ -510,48 +518,17 @@ You can override and extend the default config by creating `htmlcssjs.config.js`
 
 ### Default Config
 
-```js
-export default {
-  src: {
-    root: './src',
-    public: './public'
-  },
-  out: {
-    site: './build/site',
-    dist: './build/dist',
-    lib: './build/lib'
-  },
-  build: {
-    cssFileName: 'app',
-    jsFileName: 'app',
-    banner: '',
-    minify: true,
-    sourcemap: false
-  },
-  plugins: {
-    all: [],
-    site: [],
-    dist: [],
-    lib: []
-  },
-  viteServerOptions: {
-    host: 'localhost',
-    port: 1505
-  },
-  viteSharedOptions: {},
-  vitePreviewOptions: {},
-  viteOptimizeOptions: {},
-  viteSsrOptions: {},
-  viteWorkerOptions: {}
-}
-```
+The default config can be found in [`htmlcssjs.config.js`](https://github.com/igoynawamreh/htmlcssjs/blob/main/htmlcssjs.config.js).
 
-- `viteSharedOptions` - [See Vite Shared Options](https://vitejs.dev/config/shared-options.html) except `root`, `base`, `mode`, `plugins`, `publicDir`, `envDir`, `envPrefix`, `appType`
-- `viteServerOptions` - [See Vite Server Options](https://vitejs.dev/config/server-options.html)
-- `vitePreviewOptions` - [See Vite Preview Options](https://vitejs.dev/config/preview-options.html)
-- `viteOptimizeOptions` - [See Vite Dep Optimization Options](https://vitejs.dev/config/dep-optimization-options.html)
-- `viteSsrOptions` - [See Vite SSR Options](https://vitejs.dev/config/ssr-options.html)
-- `viteWorkerOptions` - [See Vite Worker Options](https://vitejs.dev/config/worker-options.html)
+Note:
+
+- Most of the `build.html`, `build.css`, `build.js`, `build.assets` config option only affect the `dist` and `lib` build.
+- `viteOptions.shared` - [See Vite Shared Options](https://vitejs.dev/config/shared-options.html) except `root`, `base`, `mode`, `plugins`, `publicDir`, `envDir`, `envPrefix`, `appType`
+- `viteOptions.preview` - [See Vite Preview Options](https://vitejs.dev/config/preview-options.html)
+- `viteOptions.server` - [See Vite Server Options](https://vitejs.dev/config/server-options.html)
+- `viteOptions.optimize` - [See Vite Dep Optimization Options](https://vitejs.dev/config/dep-optimization-options.html)
+- `viteOptions.ssr` - [See Vite SSR Options](https://vitejs.dev/config/ssr-options.html)
+- `viteOptions.worker` - [See Vite Worker Options](https://vitejs.dev/config/worker-options.html)
 
 ### Override Default Config
 
@@ -567,9 +544,23 @@ const banner = `
  */
 `
 
+const htmlBanner = `
+<!--
+<%= pkg.repository.url %>
+-->
+`
+
 export default {
   build: {
-    banner: banner
+    html: {
+      banner: htmlBanner
+    },
+    css: {
+      banner: banner
+    },
+    js: {
+      banner: banner
+    }
   }
 }
 ```
@@ -581,8 +572,10 @@ You can disable `site`, `dist` and `lib` build:
 
 export default {
   out: {
-    dist: false,
-    lib: false
+    dest: {
+      dist: false,
+      lib: false
+    }
   }
 }
 ```
@@ -618,18 +611,20 @@ function distPlugin() { ... }
 function libPlugin() { ... }
 
 export default {
-  plugins: {
-    all: [
-      myVitePlugin(),
-      awesomeVitePlugin()
-    ],
+  vitePlugins: {
     site: [
+      myVitePlugin(),
+      awesomeVitePlugin(),
       sitePlugin()
     ],
     dist: [
+      myVitePlugin(),
+      awesomeVitePlugin(),
       distPlugin()
     ],
     lib: [
+      myVitePlugin(),
+      awesomeVitePlugin(),
       libPlugin()
     ]
   }

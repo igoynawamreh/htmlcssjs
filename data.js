@@ -33,20 +33,3 @@ export const { config, sources } = await loadConfig({
   ],
   merge: true
 })
-
-const getViteSharedOptions = config?.viteSharedOptions ?? {}
-delete getViteSharedOptions?.root
-delete getViteSharedOptions?.base
-delete getViteSharedOptions?.mode
-delete getViteSharedOptions?.plugins
-delete getViteSharedOptions?.publicDir
-delete getViteSharedOptions?.envDir
-delete getViteSharedOptions?.envPrefix
-delete getViteSharedOptions?.appType
-
-export const viteSharedOptions = getViteSharedOptions
-export const viteServerOptions = config?.viteServerOptions ?? {}
-export const vitePreviewOptions = config?.vitePreviewOptions ?? {}
-export const viteOptimizeOptions = config?.viteOptimizeOptions ?? {}
-export const viteSsrOptions = config?.viteSsrOptions ?? {}
-export const viteWorkerOptions = config?.viteWorkerOptions ?? {}

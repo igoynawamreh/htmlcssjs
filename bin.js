@@ -41,7 +41,7 @@ if ('dev' === command) {
       process.cwd(),
       path.join(config.src.root, 'index.html')
     )) &&
-    false !== config.out.site
+    false !== config.out.dest.site
   ) {
     spawn('vite', ['--config', viteConfigSite], {
       stdio: 'inherit',
@@ -53,14 +53,14 @@ if ('dev' === command) {
         process.cwd(),
         path.join(config.src.root, 'index.js')
       )) &&
-      false !== config.out.dist
+      false !== config.out.dest.dist
     ) {
       if (
         fs.existsSync(path.resolve(
           process.cwd(),
           path.join(config.src.root, 'index.lib.js')
         )) &&
-        false !== config.out.lib
+        false !== config.out.dest.lib
       ) {
         spawn('nodemon', [
           '--watch', config.src.root,
@@ -86,7 +86,7 @@ if ('dev' === command) {
           process.cwd(),
           path.join(config.src.root, 'index.lib.js')
         )) &&
-        false !== config.out.lib
+        false !== config.out.dest.lib
       ) {
         spawn('nodemon', [
           '--watch', config.src.root,
@@ -113,17 +113,17 @@ if ('dev' === command) {
       process.cwd(),
       path.join(config.src.root, 'index.lib.js')
     )) &&
-    false !== config.out.site &&
-    false !== config.out.dist &&
-    false !== config.out.lib
+    false !== config.out.dest.site &&
+    false !== config.out.dest.dist &&
+    false !== config.out.dest.lib
   ) {
     console.log('Error: need at least one entry point index.html/index.js/index.lib.js')
   }
 
   if (
-    false === config.out.site &&
-    false === config.out.dist &&
-    false === config.out.lib
+    false === config.out.dest.site &&
+    false === config.out.dest.dist &&
+    false === config.out.dest.lib
   ) {
     console.log('All config.out are disabled')
   }
@@ -135,7 +135,7 @@ if ('prod' === command) {
       process.cwd(),
       path.join(config.src.root, 'index.html')
     )) &&
-    false !== config.out.site
+    false !== config.out.dest.site
   ) {
     spawn('vite', ['build', '--config', viteConfigSite], {
       stdio: 'inherit',
@@ -148,7 +148,7 @@ if ('prod' === command) {
       process.cwd(),
       path.join(config.src.root, 'index.js')
     )) &&
-    false !== config.out.dist
+    false !== config.out.dest.dist
   ) {
     spawn('vite', ['build', '--config', viteConfigDist], {
       stdio: 'inherit',
@@ -161,7 +161,7 @@ if ('prod' === command) {
       process.cwd(),
       path.join(config.src.root, 'index.lib.js')
     )) &&
-    false !== config.out.lib
+    false !== config.out.dest.lib
   ) {
     spawn('vite', ['build', '--config', viteConfigLib], {
       stdio: 'inherit',
@@ -182,17 +182,17 @@ if ('prod' === command) {
       process.cwd(),
       path.join(config.src.root, 'index.lib.js')
     )) &&
-    false !== config.out.site &&
-    false !== config.out.dist &&
-    false !== config.out.lib
+    false !== config.out.dest.site &&
+    false !== config.out.dest.dist &&
+    false !== config.out.dest.lib
   ) {
     console.log('Error: need at least one entry point index.html/index.js/index.lib.js')
   }
 
   if (
-    false === config.out.site &&
-    false === config.out.dist &&
-    false === config.out.lib
+    false === config.out.dest.site &&
+    false === config.out.dest.dist &&
+    false === config.out.dest.lib
   ) {
     console.log('All config.out are disabled')
   }
@@ -204,7 +204,7 @@ if ('preview' === command) {
       process.cwd(),
       path.join(config.src.root, 'index.html')
     )) &&
-    false !== config.out.site
+    false !== config.out.dest.site
   ) {
     spawn('vite', ['preview', '--config', viteConfigSite], {
       stdio: 'inherit',
@@ -217,13 +217,13 @@ if ('preview' === command) {
       process.cwd(),
       path.join(config.src.root, 'index.html')
     )) &&
-    false !== config.out.site
+    false !== config.out.dest.site
   ) {
     console.log('Missing index.html entry point.')
   }
 
-  if (false === config.out.site) {
-    console.log('The config.out.site is disabled')
+  if (false === config.out.dest.site) {
+    console.log('The config.out.dest.site is disabled')
   }
 }
 

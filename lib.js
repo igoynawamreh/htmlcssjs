@@ -12,11 +12,43 @@ import { loadEnv } from 'vite'
 
 const require = createRequire(import.meta.url)
 
-export const htmlRegExp = new RegExp(/\.(html|ejs)$/i)
+export const htmlRegExp = new RegExp(/\.(html)$/i)
 export const cssRegExp = new RegExp(/\.(css)$/i)
 export const jsRegExp = new RegExp(/\.([mc]?js)$/i)
-export const cssJsRegExp = new RegExp(/\.(css|[mc]?js)$/i)
+export const htmlCssJsRegExp = new RegExp(/\.(html|css|[mc]?js)$/i)
 export const vendorRegExp = new RegExp(/vendor/)
+
+export function viteSharedOptions(options) {
+  delete options?.root
+  delete options?.base
+  delete options?.mode
+  delete options?.plugins
+  delete options?.publicDir
+  delete options?.envDir
+  delete options?.envPrefix
+  delete options?.appType
+  return options
+}
+
+export function vitePreviewOptions(options) {
+  return options
+}
+
+export function viteServerOptions(options) {
+  return options
+}
+
+export function viteOptimizeOptions(options) {
+  return options
+}
+
+export function viteSsrOptions(options) {
+  return options
+}
+
+export function viteWorkerOptions(options) {
+  return options
+}
 
 export function findFiles(dir) {
   try {
@@ -40,46 +72,65 @@ export function findFiles(dir) {
 export function entryFileNames(
   chunkInfo,
   config,
-  useFormat = false,
-  useHash = true,
-  type = 'html'
+  type = 'site'
 ) {
-  let assetsDir = 'html' === type ? cfg.assetsDir + '/' : ''
-  let hash = useHash ? '-[hash]' : ''
-  let format = useFormat ? '.[format]' : ''
-  let finalPath = `${assetsDir}js/[name]${hash}${format}.js`
+  let assetsDir = 'site' === type ? cfg.assetsDir + '/' : ''
+  let name = '[name]'
+  let hash = ''
+  let format = ''
 
-  if ('named' === type && chunkInfo.isEntry) {
-    finalPath = `${assetsDir}js/${config.build.jsFileName}${hash}${format}.js`
+  if (
+    'site' === type ||
+    ('dist' === type && config.build.js.hash) ||
+    ('lib' === type && config.build.js.hash)
+  ) {
+    hash = '-[hash]'
   }
 
-  return finalPath
+  if ('site' === type) {
+    name = 'script'
+  }
+
+  if (('dist' === type || 'lib' === type) && chunkInfo.isEntry) {
+    name = config.build.js.filename
+  }
+
+  return `${assetsDir}js/${name}${hash}${format}.js`
 }
 
 export function chunkFileNames(
   chunkInfo,
   config,
-  useFormat = false,
-  useHash = true,
-  type = 'html'
+  type = 'site'
 ) {
-  let assetsDir = 'html' === type ? cfg.assetsDir + '/' : ''
-  let hash = useHash ? '-[hash]' : ''
-  let format = useFormat ? '.[format]' : ''
-  let finalPath = `${assetsDir}js/[name]${hash}${format}.js`
+  let assetsDir = 'site' === type ? cfg.assetsDir + '/' : ''
+  let name = '[name]'
+  let hash = ''
+  let format = ''
 
-  if ('named' === type && chunkInfo.isEntry) {
-    finalPath = `${assetsDir}js/${config.build.jsFileName}${hash}${format}.js`
+  if (
+    'site' === type ||
+    ('dist' === type && config.build.js.hash) ||
+    ('lib' === type && config.build.js.hash)
+  ) {
+    hash = '-[hash]'
   }
 
-  return  finalPath
+  if ('site' === type) {
+    name = 'script'
+  }
+
+  if (('dist' === type || 'lib' === type) && chunkInfo.isEntry) {
+    name = config.build.js.filename
+  }
+
+  return `${assetsDir}js/${name}${hash}${format}.js`
 }
 
 export function assetFileNames(
   assetInfo,
   config,
-  useHash = true,
-  type = 'html'
+  type = 'site'
 ) {
   const imagesRegExp = new RegExp(/\.(png|jpg|jpeg|jfif|pjpeg|pjp|gif|svg|ico|webp|avif)$/i)
   const mediaRegExp = new RegExp(/\.(mp4|webm|ogg|mp3|wmv|flac|aac)$/i)
@@ -102,15 +153,32 @@ export function assetFileNames(
     dir = 'others'
   }
 
-  let assetsDir = 'html' === type ? cfg.assetsDir + '/' : ''
-  let hash = useHash ? '-[hash]' : ''
-  let finalPath = `${assetsDir}${dir}/[name]${hash}[extname]`
+  let assetsDir = 'site' === type ? cfg.assetsDir + '/' : ''
+  let name = '[name]'
+  let hash = ''
 
-  if ('named' === type && 'css' === dir) {
-    finalPath = `${assetsDir}${dir}/${config.build.cssFileName}${hash}[extname]`
+  if (
+    'site' === type ||
+    ('css' === dir && 'dist' === type && config.build.css.hash) ||
+    ('css' === dir && 'lib' === type && config.build.css.hash) ||
+    (
+      'css' !== dir &&
+      ('dist' === type || 'lib' === type) &&
+      config.build.assets.hash
+    )
+  ) {
+    hash = '-[hash]'
   }
 
-  return finalPath
+  if ('site' === type && 'css' === dir) {
+    name = 'style'
+  }
+
+  if (('dist' === type || 'lib' === type) && 'css' === dir) {
+    name = config.build.css.filename
+  }
+
+  return `${assetsDir}${dir}/${name}${hash}[extname]`
 }
 
 export function getMyPackageJson(path) {
@@ -214,11 +282,14 @@ export function minifyHTML(html) {
 
 export function createBanner(file, viteConfig, config, pkg) {
   let content = fs.readFileSync(file, { encoding: 'utf8' })
-  let template = config?.build?.banner ?? ''
+  let template = ''
+  if (htmlRegExp.test(file)) template = config.build.html.banner ?? ''
+  if (cssRegExp.test(file)) template = config.build.css.banner ?? ''
+  if (jsRegExp.test(file)) template = config.build.js.banner ?? ''
   template = ejsRender(template, file, viteConfig, config, pkg)
   template = template.trim()
   content = content.trim()
-  if (jsRegExp.test(file)) {
+  if (htmlRegExp.test(file) || jsRegExp.test(file)) {
     template = '' !== template ? template + '\n' : template
   }
   fs.writeFileSync(file, template + content, { encoding: 'utf-8' })
@@ -268,7 +339,9 @@ export function htmlcssjsSite(config, pkg) {
         mdContent = mdContent ? mdContent[1] : null
         mdContent = (
           mdContent
-          ? markdownRender(mdContent.trim(), ctx.filename, viteConfig, config, pkg)
+          ? markdownRender(
+              mdContent.trim(), ctx.filename, viteConfig, config, pkg
+            )
           : ''
         )
         html = html.replace(/<:markdown:>[\s\S]*?<\/:markdown:>/g, mdContent)
@@ -339,11 +412,11 @@ export function htmlcssjsSite(config, pkg) {
       }
     },
     closeBundle() {
-      let dir = path.resolve(process.cwd(), config.out.site)
+      let dir = path.resolve(process.cwd(), config.out.dest.site)
       if (fs.existsSync(dir)) {
         const filePaths = findFiles(dir)
         filePaths && filePaths.length && filePaths.forEach((file) => {
-          if (cssJsRegExp.test(file) && !vendorRegExp.test(file)) {
+          if (htmlCssJsRegExp.test(file) && !vendorRegExp.test(file)) {
             createBanner(file, viteConfig, config, pkg)
           }
         })
@@ -360,11 +433,11 @@ export function htmlcssjsDist(config, pkg) {
       viteConfig = resolvedConfig
     },
     closeBundle() {
-      let dir = path.resolve(process.cwd(), config.out.dist)
+      let dir = path.resolve(process.cwd(), config.out.dest.dist)
       if (fs.existsSync(dir)) {
         const filePaths = findFiles(dir)
         filePaths && filePaths.length && filePaths.forEach((file) => {
-          if (cssJsRegExp.test(file) && !vendorRegExp.test(file)) {
+          if (htmlCssJsRegExp.test(file) && !vendorRegExp.test(file)) {
             createBanner(file, viteConfig, config, pkg)
           }
         })
@@ -381,11 +454,11 @@ export function htmlcssjsLib(config, pkg) {
       viteConfig = resolvedConfig
     },
     closeBundle() {
-      let dir = path.resolve(process.cwd(), config.out.lib)
+      let dir = path.resolve(process.cwd(), config.out.dest.lib)
       if (fs.existsSync(dir)) {
         const filePaths = findFiles(dir)
         filePaths && filePaths.length && filePaths.forEach((file) => {
-          if (cssJsRegExp.test(file) && !vendorRegExp.test(file)) {
+          if (htmlCssJsRegExp.test(file) && !vendorRegExp.test(file)) {
             createBanner(file, viteConfig, config, pkg)
           }
         })
@@ -405,7 +478,7 @@ export function htmlcssjsMinifyHTML(config, pkg) {
     apply: 'build',
     transformIndexHtml: (html) => {
       return (
-        'production' === viteConfig.mode && config.build.minify
+        'production' === viteConfig.mode && config.build.html.minify
         ? minifyHTML(html)
         : html
       )
