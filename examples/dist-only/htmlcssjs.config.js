@@ -3,6 +3,13 @@ export default {
     root: './src'
   },
   out: {
-    dist: './dist'
+    dest: {
+      dist: './dist'
+    }
+  },
+  build: {
+    js: {
+      distFormat: 'iife'
+    }
   }
 }

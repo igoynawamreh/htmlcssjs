@@ -4,6 +4,20 @@ block variables
   - var title = 'Page two'
 
 block content
-  h1 #{env.APP_TITLE} / Page two
-  p: img(src='/assets/code.png' alt='Code')
-  p: a(href=env.APP_BASE_URL + '/') Back to Home
+  :markdown
+    # <%= env.APP_TITLE %> / Page two
+
+    ![Code](/assets/code.png)
+
+    [Back to home](/)
+
+    ```js
+    console.log('M')
+    console.log('A')
+    console.log('R')
+    console.log('K')
+    console.log('D')
+    console.log('O')
+    console.log('W')
+    console.log('N')
+    ```

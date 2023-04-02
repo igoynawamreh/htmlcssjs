@@ -6,12 +6,12 @@ html
     meta(charset='utf-8')
     meta(name='viewport' content='width=device-width, initial-scale=1')
     title #{title ? title + ' | ' : ''}#{env.APP_TITLE}
-    link(rel='icon' href=env.APP_BASE_URL + '/favicon.ico')
+    link(rel='icon' href='/favicon.ico')
   body
     nav
-      a(href=env.APP_BASE_URL + '/') Home
-      a(href=env.APP_BASE_URL + '/blog/') Blog
-      a(href=env.APP_BASE_URL + '/projects/') Projects
+      a(href='/') Home
+      a(href='/pages/') Pages
+      a(href='/projects/') Projects
 
     div
       block content

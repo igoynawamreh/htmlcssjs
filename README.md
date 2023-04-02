@@ -6,8 +6,8 @@ The simplest, fastest and leanest way to develop HTML, CSS and JS. Powered by [V
 
 ## Key Features
 
-- Supports ESM, PostCSS, CSS Modules, Sass, Stylus, and Less out of the box.
-- Produces CSS and JS bundle and its assets. And also produces HTML pages that can be used for static site, documentation and preview page that is suitable to be served over a static hosting service.
+- Supports ESM, EJS, Pug, Markdown, PostCSS, CSS Modules, Sass, Stylus, and Less out of the box.
+- Produces CSS and JS bundle and its assets. And also produces HTML pages that can be used for static site, documentation page, preview page, etc that is suitable to be served over a static hosting service.
 - Auto-organized static assets like images, fonts and other file types.
 - You can use this tool with zero-config or extend using [`htmlcssjs.config.js`](#htmlcssjsconfigjs).
 - Can easily develop themes using popular web frameworks like [Bootstrap](https://getbootstrap.com/), [Tailwind CSS](https://tailwindcss.com/), [Bulma](https://bulma.io/) and more.
@@ -49,7 +49,7 @@ npm install htmlcssjs --save-dev
 
 ## Project Structure
 
-You just need at least one entry point `index.html`, `index.js` and/or [`index.lib.js`](#add-library-mode) in `src` directory. The other files and directories can be flexibly arranged to your needs.
+You just need at least one entry point `index.html`, `index.js` and/or [`index.lib.js`](#using-library-mode) in `src` directory. The other files and directories can be flexibly arranged to your needs.
 
 ```text
 .
@@ -114,7 +114,7 @@ Source code:
 
 Static assets:
 
-- When a static assets like images, fonts, etc is used in source code, it will be automatically emitted and organized to `build/dist/[file-types]/` and `build/site/assets/[file-types]/`. Known file types:
+- When a static assets like images, fonts, etc is used in source code, it will be automatically emitted and organized to their build destination. Known file types:
   - `documents`: `.(pdf|txt)`
   - `fonts`: `.(woff|woff2|eot|ttf|otf)`
   - `images`: `.(png|jpg|jpeg|jfif|pjpeg|pjp|gif|svg|ico|webp|avif)`
@@ -122,8 +122,6 @@ Static assets:
   - `others`: `.(webmanifest)`
 
 ### The Production Build
-
-The `htmlcssjs prod` command produces `build/dist` and `build/site` directory.
 
 - `build/dist`: The final production CSS, JS and its assets (without HTML files).
 - `build/site`: The final production HTML, CSS, JS and its assets.
@@ -136,17 +134,17 @@ The difference between `build/dist` and `build/site`:
 - The `build/site` is a static site, and is suitable to be served over a static hosting service.
   - It can be used to create a static site.
   - It can be used to document your themes, components, layouts, etc.
-  - It can be used to provide a live preview of your themes, components, layouts, etc for you or for your client.
+  - It can be used to provide a live preview of your themes, components, layouts, etc.
 
 ## Guide
 
 ### Configure Base URL
 
-If you want to served the `build/site` to a hosting service you must specify the `APP_BASE_URL` option in `.env` file.
+If you want to serve the `build/site` to a hosting service you must specify the `APP_BASE_URL` option in `.env` file.
 
-For example, if you want to served the pages to `https://example.com/`, then set `APP_BASE_URL` to `https://example.com/` or just `/`.
+For example, if you want to serve the pages to `https://example.com/`, then set `APP_BASE_URL` to `https://example.com/` or just `/`.
 
-Or, if you want to served the pages to `https://example.com/my-themes/`, then set `APP_BASE_URL` to `https://example.com/my-themes/` or just `/my-themes/`.
+Or, if you want to serve the pages to `https://example.com/my-themes/`, then set `APP_BASE_URL` to `https://example.com/my-themes/` or just `/my-themes/`.
 
 ```shell
 # .env
@@ -240,9 +238,9 @@ console.log(import.meta.env.APP_KEY_NAME)
 #### Paths
 
 - `/file.ext`: Relative to the `src` directory.
-- `./file.ext` and `../../file.ext`: Relative to the current file directory.
+- `./file.ext` or `../../file.ext`: Relative to the current file directory.
 
-#### Importing JS Entry Point (`src/index.js`) to HTML Entry Point (`src/index.html`)
+#### Importing JS Entry Point (`src/index.js`) to HTML page
 
 ```html
 <!-- src/index.html -->
@@ -264,14 +262,6 @@ import './example-css/foo.css'
 // import './example-css/foo.scss'
 // import './example-css/foo.styl'
 // import './example-css/foo.less'
-```
-
-#### Importing Separate JS to JS Entry Point
-
-```js
-// src/index.js
-
-import { x } from './example-js/foo'
 ```
 
 #### Using Static Assets in CSS and JS
@@ -297,7 +287,7 @@ We uses [EJS](https://ejs.co/) and [Pug](https://pugjs.org/) for HTML templating
 
 #### Using Variables in HTML
 
-You can use data from `.env` and `package.json`.
+You can use data from `.env` and `package.json` in HTML/Template files.
 
 EJS:
 
@@ -327,15 +317,19 @@ EJS:
 Pug:
 
 ```html
-img(src='./foo.pug' alt='Image')
-img(src='/example-files/example-images/foo.pug' alt='Image')
+img(src='./foo.png' alt='Image')
+img(src='/example-files/example-images/foo.png' alt='Image')
 ```
 
 #### Including file in HTML
 
-The path rules are the same as when using static assets above.
-
 EJS:
+
+```html
+<!-- src/index.html -->
+
+<%- include('./html-template/hero.ejs') -%>
+```
 
 ```html
 <!-- src/example-pages/page-one/index.html -->
@@ -346,18 +340,19 @@ EJS:
 Pug:
 
 ```html
-include /html-template/hero.pug
+include ./html-template/hero.pug
 ```
 
 #### Links Between Pages
 
-Links in HTML page will be auto-resolved based on the `APP_BASE_URL` value. Let's say the value of `APP_BASE_URL` in `.env` file is `https://example.com/docs/`.
+Links in HTML page will be automatically resolved based on the `APP_BASE_URL` value. Let's say the value of `APP_BASE_URL` in `.env` file is `https://example.com/docs/`.
 
 Paths:
 
 - `/path/to/file.html`: Relative to the `src` directory.
-- `./path/to/file.html` and `../../path/to/file.html`: Relative to the current file directory.
-- `/path/to/`: Same as `/path/to/index.html`
+- `./path/to/file.html` or `../../path/to/file.html`: Relative to the current file directory.
+- `/path/foo/`: Same as `/path/foo/index.html`
+- `./path/foo/`: Same as `./path/foo/index.html`
 
 ```html
 <!-- src/index.html -->
@@ -478,7 +473,7 @@ You can write Markdown in Pug template using `:markdown` filter. You can also us
 :markdown(pug) include ./path/to/page.md
 ```
 
-## Add Library Mode
+## Using Library Mode
 
 Create `index.lib.js` file in the `src` directory to create library. Now, the `htmlcssjs prod` command will produces `build/lib` directory.
 
@@ -488,7 +483,8 @@ By default, the library mode produces `ES` and `UMD` format. You can override th
 ...
 build: {
   js: {
-    libFormats: ['es', 'cjs', 'umd', 'iife']
+    libFormats: ['es', 'cjs', 'umd', 'iife'],
+    name: 'MyLib'
   }
 }
 ...
@@ -522,7 +518,6 @@ The default config can be found in [`htmlcssjs.config.js`](https://github.com/ig
 
 Note:
 
-- Most of the `build.html`, `build.css`, `build.js`, `build.assets` config option only affect the `dist` and `lib` build.
 - `viteOptions.shared` - [See Vite Shared Options](https://vitejs.dev/config/shared-options.html) except `root`, `base`, `mode`, `plugins`, `publicDir`, `envDir`, `envPrefix`, `appType`
 - `viteOptions.preview` - [See Vite Preview Options](https://vitejs.dev/config/preview-options.html)
 - `viteOptions.server` - [See Vite Server Options](https://vitejs.dev/config/server-options.html)
@@ -565,7 +560,7 @@ export default {
 }
 ```
 
-You can disable `site`, `dist` and `lib` build:
+You can disable `site`, `dist` or `lib` build:
 
 ```js
 // htmlcssjs.config.js

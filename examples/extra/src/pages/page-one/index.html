@@ -4,20 +4,6 @@ block variables
   - var title = 'Page one'
 
 block content
-  :markdown
-    # <%= env.APP_TITLE %> / Page one
-
-    ![Code](/assets/code.png)
-
-    [Back to home](<%= env.APP_BASE_URL %>/)
-
-    ```js
-    console.log('M')
-    console.log('A')
-    console.log('R')
-    console.log('K')
-    console.log('D')
-    console.log('O')
-    console.log('W')
-    console.log('N')
-    ```
+  h1 #{env.APP_TITLE} / #{title}
+  p: img(src='/assets/code.png' alt='Code')
+  p: a(href='/') Back to Home

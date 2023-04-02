@@ -4,8 +4,10 @@ export default {
     public: './public'
   },
   out: {
-    site: './site',
-    dist: false,
-    lib: false
+    dest: {
+      site: './site',
+      dist: false,
+      lib: false
+    }
   }
 }
