@@ -1,9 +1,0 @@
-/*!
- * Package name: my-awesome-theme
- * App title: HTML:CSS:JS
- */
-/*!
- * Package name: my-awesome-theme
- * App title: HTML:CSS:JS
- */
-(function(){const o=document.createElement("link").relList;if(o&&o.supports&&o.supports("modulepreload"))return;for(const e of document.querySelectorAll('link[rel="modulepreload"]'))c(e);new MutationObserver(e=>{for(const t of e)if(t.type==="childList")for(const r of t.addedNodes)r.tagName==="LINK"&&r.rel==="modulepreload"&&c(r)}).observe(document,{childList:!0,subtree:!0});function d(e){const t={};return e.integrity&&(t.integrity=e.integrity),e.referrerPolicy&&(t.referrerPolicy=e.referrerPolicy),e.crossOrigin==="use-credentials"?t.credentials="include":e.crossOrigin==="anonymous"?t.credentials="omit":t.credentials="same-origin",t}function c(e){if(e.ep)return;e.ep=!0;const t=d(e);fetch(e.href,t)}})();const l={"bg-white":"_bg-white_wsxyc_1"},u={"text-black":"_text-black_57g64_1"};function f(s){alert(s)}const m="/assets/images/html-a0d7237e.png",g="/assets/images/css-4e81a5e2.png",p="/assets/images/js-33f1c5d2.png",i={text:{appTitle:"HTML:CSS:JS"},images:{html:m,css:g,js:p}};document.body.classList.add(l["bg-white"]);document.body.classList.add(u["text-black"]);const a=document.querySelectorAll("[data-image]");a&&a.forEach(s=>{s.src=i.images[s.dataset.image]});const n=document.querySelectorAll("[data-alert]");n&n.forEach(s=>{s.addEventListener(s.dataset.event||"click",function(){f(i.text[s.dataset.alert]??s.dataset.alert)})});
