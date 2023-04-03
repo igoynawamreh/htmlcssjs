@@ -29,11 +29,11 @@ document.body.classList.add(barClasses['text-black'])
 
 const dataImageEl = document.querySelectorAll('[data-image]')
 dataImageEl && dataImageEl.forEach((el) => {
-  el.src= DATA.images[el.dataset.image]
+  el.src = DATA.images[el.dataset.image]
 })
 
 const dataAlertEl = document.querySelectorAll('[data-alert]')
-dataAlertEl & dataAlertEl.forEach((el) => {
+dataAlertEl && dataAlertEl.forEach((el) => {
   el.addEventListener(el.dataset.event || 'click', function () {
     myAlert(DATA.text[el.dataset.alert] ?? el.dataset.alert)
   })
