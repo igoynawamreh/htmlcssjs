@@ -55,6 +55,7 @@ export default ({ mode }) => {
         external: config.build.js.external,
         output: {
           format: config.build.js.distFormat,
+          name: config.build.js.name ?? (pkg?.name ? pkg.name.replace(/-/g, '_') : 'app'),
           globals: config.build.js.globals,
           entryFileNames: (chunkInfo) => {
             return entryFileNames(chunkInfo, config, 'dist')
