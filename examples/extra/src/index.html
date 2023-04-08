@@ -12,9 +12,8 @@ block content
   ul
     li: a(href='./pages/page-one/') Page one
     li: a(href='./pages/page-two/') Page two
-  p
-    button(type='button' data-alert='appTitle' data-event='click') Click me
-    button(type='button' data-alert='Hello, world!' data-event='dblclick') Double click me
+  :ejs
+    <%- include('./templates/example-alert.ejs') -%>
   :markdown
     ## Source
 
@@ -27,7 +26,6 @@ block content
     ul
       li: a(href='./pages/page-one/') Page one
       li: a(href='./pages/page-two/') Page two
-    p
-      button(type='button' data-alert='appTitle' data-event='click') Click me
-      button(type='button' data-alert='Hello, world!' data-event='dblclick') Double click me
+    :ejs
+      <%%- include('./templates/example-alert.ejs') -%%>
     ```
