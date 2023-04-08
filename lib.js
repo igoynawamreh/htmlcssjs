@@ -225,6 +225,9 @@ export function pugRender(template, filename, viteConfig, config, pkg) {
     env: process.env,
     pkg: pkg,
     filters: {
+      'ejs': function(text, _options) {
+        return ejsRender(text, filename, viteConfig, config, pkg)
+      },
       'markdown': function(text, options) {
         if (options?.pug) {
           text = pugRender(text, filename, viteConfig, config, pkg)
@@ -328,11 +331,11 @@ export function htmlcssjsSite(config, pkg) {
     transformIndexHtml: {
       enforce: 'pre',
       transform (html, ctx) {
-        html = ejsRender(html, ctx.filename, viteConfig, config, pkg)
-
         try {
           html = pugRender(html, ctx.filename, viteConfig, config, pkg)
         } catch {}
+
+        html = ejsRender(html, ctx.filename, viteConfig, config, pkg)
 
         let mdPattern = new RegExp(`<:markdown:>((.|\\n)*?)</:markdown:>`)
         let mdContent = mdPattern.exec(html)

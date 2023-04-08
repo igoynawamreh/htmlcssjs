@@ -253,7 +253,7 @@ console.log(import.meta.env.APP_KEY_NAME)
 ...
 ```
 
-#### Importing Styles to JS Entry Point
+#### Importing Styles to JS Entry Point (`src/index.js`)
 
 ```js
 // src/index.js
@@ -284,6 +284,36 @@ document.querySelector('#hero-img').src = imgUrl
 #### HTML Template
 
 We uses [EJS](https://ejs.co/) and [Pug](https://pugjs.org/) for HTML templating.
+
+#### Including HTML Template
+
+EJS:
+
+```html
+<!-- src/index.html -->
+
+<%- include('./html-template/hero.ejs') -%>
+```
+
+```html
+<!-- src/example-pages/page-one/index.html -->
+
+<%- include('/html-template/hero.ejs') -%>
+```
+
+Pug:
+
+```html
+<!-- src/index.html -->
+
+include ./html-template/hero.pug
+```
+
+```html
+<!-- src/example-pages/page-one/index.html -->
+
+include /html-template/hero.pug
+```
 
 #### Using Variables in HTML
 
@@ -317,30 +347,10 @@ EJS:
 Pug:
 
 ```html
-img(src='./foo.png' alt='Image')
-img(src='/example-files/example-images/foo.png' alt='Image')
-```
-
-#### Including file in HTML
-
-EJS:
-
-```html
-<!-- src/index.html -->
-
-<%- include('./html-template/hero.ejs') -%>
-```
-
-```html
 <!-- src/example-pages/page-one/index.html -->
 
-<%- include('/html-template/hero.ejs') -%>
-```
-
-Pug:
-
-```html
-include ./html-template/hero.pug
+img(src='./foo.png' alt='Image')
+img(src='/example-files/example-images/foo.png' alt='Image')
 ```
 
 #### Links Between Pages
@@ -353,6 +363,8 @@ Paths:
 - `./path/to/file.html` or `../../path/to/file.html`: Relative to the current file directory.
 - `/path/foo/`: Same as `/path/foo/index.html`
 - `./path/foo/`: Same as `./path/foo/index.html`
+
+Example:
 
 ```html
 <!-- src/index.html -->
@@ -402,6 +414,27 @@ Paths:
 <a class="3" href="https://example.com/docs/pages/page-one/bar/">Page One / Bar</a>
 ```
 
+#### Using Markdown in Pug Template
+
+You can write Markdown in Pug template using `:markdown` filter. You can also use EJS syntax inside Markdown.
+
+```html
+block content
+  :markdown
+    # [<%= env.APP_TITLE %>](https://github.com/igoynawamreh/htmlcssjs)
+
+    [Go to page one](/example-pages/page-one/)
+
+    [Back to home](/)
+
+    ![My Image](./path/to/image.png)
+```
+
+```html
+block content
+  :markdown(pug) include ./path/to/page.md
+```
+
 #### Using Markdown in EJS Template
 
 You can write Markdown in EJS template using `:markdown:` tag. You can also use EJS syntax inside Markdown.
@@ -415,7 +448,7 @@ Example:
 ```html
 <html>
   <body>
-    <div>
+    <div class="content">
       <:markdown:>
         # [<%= env.APP_TITLE %>](https://github.com/igoynawamreh/htmlcssjs)
 
@@ -437,7 +470,7 @@ Example:
 ```html
 <html>
   <body>
-    <div>
+    <div class="content">
 <:markdown:>
 # [<%= env.APP_TITLE %>](https://github.com/igoynawamreh/htmlcssjs)
 
@@ -454,23 +487,25 @@ Example:
 <html>
 ```
 
-#### Using Markdown in Pug Template
+#### Using EJS in Pug
 
-You can write Markdown in Pug template using `:markdown` filter. You can also use EJS syntax inside Markdown.
+You can use EJS/HTML syntax in Pug using `:ejs` filter.
+
+Example:
 
 ```html
-:markdown
-  # [<%= env.APP_TITLE %>](https://github.com/igoynawamreh/htmlcssjs)
+<!-- src/templates/hello-world.ejs -->
 
-  [Go to page one](/example-pages/page-one/)
-
-  [Back to home](/)
-
-  ![My Image](./path/to/image.png)
+<div class="hello-world">
+  <p>Hello, world!</p>
+</div>
 ```
 
 ```html
-:markdown(pug) include ./path/to/page.md
+<!-- src/example/pug/page.html -->
+
+block content
+  :ejs <%- include('/templates/hello-world.ejs') -%>
 ```
 
 ## Using Library Mode
