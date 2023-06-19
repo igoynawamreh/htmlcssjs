@@ -37,12 +37,12 @@ export default ({ mode }) => {
     envDir: process.cwd(),
     envPrefix: cfg.envPrefix,
     build: {
-      outDir: path.resolve(path.join(process.cwd(), config.out.dest.lib)),
+      outDir: path.resolve(path.join(process.cwd(), config.out.lib.dest)),
       assetsDir: cfg.assetsDir,
       assetsInlineLimit: 0,
       cssCodeSplit: false,
-      minify: 'production' === mode ? config.build.js.minify : false,
-      cssMinify: 'production' === mode ? config.build.css.minify : false,
+      minify: mode === 'production' ? config.build.js.minify : false,
+      cssMinify: mode === 'production' ? config.build.css.minify : false,
       sourcemap: false,
       target: browserslistToEsbuild(),
       cssTarget: browserslistToEsbuild(),
@@ -51,19 +51,19 @@ export default ({ mode }) => {
           process.cwd(), path.join(config.src.root, 'index.lib.js')
         ),
         formats: config.build.js.libFormats,
-        name: config.build.js.name ?? (pkg?.name ? pkg.name.replace(/-/g, '_') : 'app'),
+        name: config.build.js.name,
         fileName: (format) => {
           let hash = ''
           if (true === config.build.js.hash) {
             hash = '-[hash]'
           }
-          if ('es' === format || 'esm' === format) {
+          if (format === 'es' || format === 'esm') {
             return `js/${config.build.js.filename}${hash}.esm.js`
-          } else if ('cjs' === format) {
+          } else if (format === 'cjs') {
             return `js/${config.build.js.filename}${hash}.cjs.js`
-          } else if ('umd' === format) {
+          } else if (format === 'umd') {
             return `js/${config.build.js.filename}${hash}.umd.js`
-          } else if ('iife' === format) {
+          } else if (format === 'iife') {
             return `js/${config.build.js.filename}${hash}.iife.js`
           } else {
             return `js/${config.build.js.filename}${hash}.${format}.js`
@@ -80,7 +80,7 @@ export default ({ mode }) => {
         }
       },
       copyPublicDir: false,
-      emptyOutDir: config.out.clean.lib
+      emptyOutDir: config.out.lib.clean
     },
     plugins: plugins,
     ...viteSharedOptions(config.viteOptions.shared),

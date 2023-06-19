@@ -1,4 +1,4 @@
-extends ./templates/simple-layout.pug
+extends ./@templates/simple-layout.pug
 
 block variables
   - var title = 'Home'
@@ -6,26 +6,26 @@ block variables
 block content
   h1 #{env.APP_TITLE}
   p
-    img(src='./assets/logo/html.png' alt='HTML')
-    img(src='./assets/logo/css.png' alt='CSS')
+    img(src='./@assets/logo/html.png' alt='HTML')
+    img(src='./@assets/logo/css.png' alt='CSS')
     img(data-image='js' alt='JS')
   ul
     li: a(href='./pages/page-one/') Page one
     li: a(href='./pages/page-two/') Page two
   :ejs
-    <%- include('./templates/example-alert.ejs') -%>
+    <%- include('./@templates/example-alert.ejs') -%>
   :markdown
     ## Source
 
     ```pug
     h1 #{env.APP_TITLE}
     p
-      img(src='./assets/logo/html.png' alt='HTML')
-      img(src='./assets/logo/css.png' alt='CSS')
+      img(src='./@assets/logo/html.png' alt='HTML')
+      img(src='./@assets/logo/css.png' alt='CSS')
       img(data-image='js' alt='JS')
     ul
       li: a(href='./pages/page-one/') Page one
       li: a(href='./pages/page-two/') Page two
     :ejs
-      <%%- include('./templates/example-alert.ejs') -%%>
+      <%%- include('./@templates/example-alert.ejs') -%%>
     ```

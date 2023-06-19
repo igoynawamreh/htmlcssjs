@@ -72,24 +72,26 @@ You just need at least one entry point `index.html`, `index.js` and/or [`index.l
 │       │   ├── media/
 │       │   └── others/
 │       ├── example-pages/
-│       │   └── page-one/
+│       │   ├── foo.html
+│       │   └── page-1/
 │       │       └── index.html
 │       └── index.html
 ├── public/
 └── src/
-    ├── example-files/
+    ├── @example-files/
     │   ├── example-images/
     │   │   └── foo.png
     │   ├── example-fonts/
     │   │   └── foo.woff2
     │   └── example-media/
     │       └── foo.mp4
-    ├── example-css/
+    ├── @example-css/
     │   └── foo.[css|module.css|scss|styl|less]
-    ├── example-js/
+    ├── @example-js/
     │   └── foo.js
     ├── example-pages/
-    │   └── page-one/
+    │   ├── foo.html
+    │   └── page-1/
     │       └── index.html
     ├── index.html
     └── index.js
@@ -108,18 +110,19 @@ Assets that are never referenced in source code (e.g. `favicon.ico`, `robots.txt
 
 You can add HTML, CSS, JS, images, fonts and more in `src` directory in a modularized fashion.
 
-Source code:
+#### Source code
 
-- The CSS and JS source code must be imported in `src/index.js` entry point.
+The CSS and JS source code must be imported in `src/index.js` entry point.
 
-Static assets:
+#### Static assets
 
-- When a static assets like images, fonts, etc is used in source code, it will be automatically emitted and organized to their build destination. Known file types:
-  - `documents`: `.(pdf|txt)`
-  - `fonts`: `.(woff|woff2|eot|ttf|otf)`
-  - `images`: `.(png|jpg|jpeg|jfif|pjpeg|pjp|gif|svg|ico|webp|avif)`
-  - `media`: `.(mp4|webm|ogg|mp3|wmv|flac|aac)`
-  - `others`: `.(webmanifest)`
+When a static assets like images, fonts, etc is used in source code, it will be automatically emitted and organized to their build destination. Known file types:
+
+- `documents`: `.(pdf|txt)`
+- `fonts`: `.(woff|woff2|eot|ttf|otf)`
+- `images`: `.(png|jpg|jpeg|jfif|pjpeg|pjp|gif|svg|ico|webp|avif)`
+- `media`: `.(mp4|webm|ogg|mp3|wmv|flac|aac)`
+- `others`: `.(webmanifest)`
 
 ### The Production Build
 
@@ -130,10 +133,10 @@ The difference between `build/dist` and `build/site`:
 
 - The `build/dist` is ready-to-use production build. It can be used in your app or anywhere.
   - You can copy all files and directories in `build/dist/` to your app.
-  - Or you can [configure](#htmlcssjsconfigjs) the `out.dest.dist` config option to match your app structure, so you can use it directly without having to copy it manually.
+  - Or you can [configure](#htmlcssjsconfigjs) the `out.dist.dest` config option to match your app structure, so you can use it directly without having to copy it manually.
 - The `build/site` is a static site, and is suitable to be served over a static hosting service.
   - It can be used to create a static site.
-  - It can be used to document your themes, components, layouts, etc.
+  - It can be used to create documentation pages for your themes, components, layouts, etc.
   - It can be used to provide a live preview of your themes, components, layouts, etc.
 
 ## Guide
@@ -165,8 +168,6 @@ not dead
 ```
 
 ### Env Variables
-
-#### `.env` Files
 
 The env variables is loaded from the following files in the root directory:
 
@@ -214,23 +215,33 @@ console.log(import.meta.env.APP_KEY_NAME)
 ```text
 .
 └── src/
-    ├── example-files/
+    ├── @example-files/
     │   ├── example-images/
     │   │   └── foo.png
     │   ├── example-fonts/
     │   │   └── foo.woff2
     │   └── example-media/
     │       └── foo.mp4
-    ├── example-css/
+    ├── @example-css/
     │   └── foo.css
-    ├── example-js/
+    ├── @example-js/
     │   └── foo.js
-    ├── example-pages/
-    │   └── page-one/
-    │       ├── foo.png
-    │       └── index.html
-    ├── html-template/
+    ├── @example-templates/
     │   └── hero.ejs
+    ├── example-pages/
+    │   ├── foo.html
+    │   ├── page-1/
+    │   │   ├── page-1-sub/
+    │   │   │   └── index.html
+    │   │   ├── bar.html
+    │   │   ├── index.html
+    │   │   └── image.png
+    │   └── page-2/
+    │       ├── page-2-sub/
+    │       │   └── index.html
+    │       ├── baz.html
+    │       ├── index.html
+    │       └── image.png
     ├── index.html
     └── index.js
 ```
@@ -240,79 +251,101 @@ console.log(import.meta.env.APP_KEY_NAME)
 - `/file.ext`: Relative to the `src` directory.
 - `./file.ext` or `../../file.ext`: Relative to the current file directory.
 
+#### HTML Template
+
+We uses [EJS](https://ejs.co/) and [Pug](https://pugjs.org/) for HTML templating.
+
 #### Importing JS Entry Point (`src/index.js`) to HTML page
 
 ```html
-<!-- src/index.html -->
+<!-- # src/index.html -->
 
-...
 <body>
   ...
   <script type="module" src="./index.js"></script>
 </body>
-...
 ```
 
 #### Importing Styles to JS Entry Point (`src/index.js`)
 
 ```js
-// src/index.js
+// # src/index.js
 
-import './example-css/foo.css'
-// import './example-css/foo.scss'
-// import './example-css/foo.styl'
-// import './example-css/foo.less'
+import './@example-css/foo.css'
+// import './@example-css/foo.scss'
+// import './@example-css/foo.styl'
+// import './@example-css/foo.less'
 ```
 
-#### Using Static Assets in CSS and JS
+#### Using Static Assets in HTML, CSS and JS
+
+EJS:
+
+```html
+<!-- # src/example-pages/page-1/index.html -->
+
+<img src="./image.png" alt="Image">
+<img src="/example-pages/page-2/image.png" alt="Image">
+<img src="/@example-files/example-images/foo.png" alt="Image">
+```
+
+Pug:
+
+```html
+<!-- # src/example-pages/page-1/index.html -->
+
+img(src='./image.png' alt='Image')
+img(src='/example-pages/page-2/image.png' alt='Image')
+img(src='/@example-files/example-images/foo.png' alt='Image')
+```
+
+CSS:
 
 ```css
-/* src/example-css/foo.css */
+/* # src/@example-css/foo.css */
 
 .foo {
-  background-color: url(../example-files/example-images/foo.png);
+  background-color: url(../@example-files/example-images/foo.png);
 }
 ```
 
+JS:
+
 ```js
-// src/example-js/foo.js
+// # src/@example-js/foo.js
 
-import imgUrl from '../example-files/example-images/foo.png'
-document.querySelector('#hero-img').src = imgUrl
+import image from '../@example-files/example-images/foo.png'
+document.querySelector('#hero-img').src = image
 ```
-
-#### HTML Template
-
-We uses [EJS](https://ejs.co/) and [Pug](https://pugjs.org/) for HTML templating.
 
 #### Including HTML Template
 
 EJS:
 
 ```html
-<!-- src/index.html -->
+<!-- # src/index.html -->
 
-<%- include('./html-template/hero.ejs') -%>
+<%- include('./@example-templates/hero.ejs') -%>
 ```
 
 ```html
-<!-- src/example-pages/page-one/index.html -->
+<!-- # src/example-pages/page-1/index.html -->
 
-<%- include('/html-template/hero.ejs') -%>
+<%- include('/@example-templates/hero.ejs') -%>
 ```
 
 Pug:
 
 ```html
-<!-- src/index.html -->
+<!-- # src/index.html -->
 
-include ./html-template/hero.pug
+include ./@example-templates/hero.pug
 ```
 
 ```html
-<!-- src/example-pages/page-one/index.html -->
+<!-- # src/example-pages/page-1/index.html -->
 
-include /html-template/hero.pug
+include /@example-templates/hero.pug
 ```
 
 #### Using Variables in HTML
@@ -333,26 +366,6 @@ p #{env.APP_KEY_NAME}
 p #{pkg.keyName}
 ```
 
-#### Using Static Assets in HTML
-
-EJS:
-
-```html
-<!-- src/example-pages/page-one/index.html -->
-
-<img src="./foo.png" alt="Image">
-<img src="/example-files/example-images/foo.png" alt="Image">
-```
-
-Pug:
-
-```html
-<!-- src/example-pages/page-one/index.html -->
-
-img(src='./foo.png' alt='Image')
-img(src='/example-files/example-images/foo.png' alt='Image')
-```
-
 #### Links Between Pages
 
 Links in HTML page will be automatically resolved based on the `APP_BASE_URL` value. Let's say the value of `APP_BASE_URL` in `.env` file is `https://example.com/docs/`.
@@ -364,54 +377,76 @@ Paths:
 - `/path/foo/`: Same as `/path/foo/index.html`
 - `./path/foo/`: Same as `./path/foo/index.html`
 
-Example:
+Example 1:
 
 ```html
-<!-- src/index.html -->
+<!-- # src/index.html -->
 
-<!-- Input -->
+<a href="/">Home</a>
+<a href="/index.html">Home</a>
+<a href="./index.html">Home</a>
 
-<a class="1" href="/">Home</a>
-<a class="1" href="/index.html">Home</a>
-<a class="1" href="./index.html">Home</a>
+<a href="/pages/page-1/">Page 1</a>
+<a href="/pages/page-1/index.html">Page 1</a>
+<a href="./pages/page-1/">Page 1</a>
+<a href="./pages/page-1/index.html">Page 1</a>
 
-<a class="2" href="/pages/page-one/">Page One</a>
-<a class="2" href="/pages/page-one/index.html">Page One</a>
-<a class="2" href="./pages/page-one/">Page One</a>
-<a class="2" href="./pages/page-one/index.html">Page One</a>
-
-<a class="3" href="/pages/page-one/foo.html">Page One / Foo</a>
-<a class="3" href="./pages/page-one/foo.html">Page One / Foo</a>
-
-<!-- Output -->
-<a class="1" href="https://example.com/docs/">Home</a>
-<a class="2" href="https://example.com/docs/pages/page-one/">Page One</a>
-<a class="3" href="https://example.com/docs/pages/page-one/foo.html">Page One / Foo</a>
+<a href="/pages/page-1/bar.html">Bar</a>
+<a href="./pages/page-1/bar.html">Bar</a>
 ```
 
+Output 1:
+
 ```html
-<!-- src/pages/page-one/index.html -->
+<a href="https://example.com/docs/">Home</a>
+<a href="https://example.com/docs/">Home</a>
+<a href="https://example.com/docs/">Home</a>
 
-<!-- Input -->
+<a href="https://example.com/docs/example-pages/page-1/">Page 1</a>
+<a href="https://example.com/docs/example-pages/page-1/">Page 1</a>
+<a href="https://example.com/docs/example-pages/page-1/">Page 1</a>
+<a href="https://example.com/docs/example-pages/page-1/">Page 1</a>
 
-<a class="1" href="/">Home</a>
-<a class="1" href="/index.html">Home</a>
-<a class="1" href="../../index.html">Home</a>
+<a href="https://example.com/docs/example-pages/page-1/bar.html">Bar</a>
+<a href="https://example.com/docs/example-pages/page-1/bar.html">Bar</a>
+```
 
-<a class="2" href="/pages/page-two/foo/">Page Two / Foo</a>
-<a class="2" href="/pages/page-two/foo/index.html">Page Two / Foo</a>
-<a class="2" href="../page-two/foo/">Page Two / Foo</a>
-<a class="2" href="../page-two/foo/index.html">Page Two / Foo</a>
+Example 2:
 
-<a class="3" href="/pages/page-one/bar/">Page One / Bar</a>
-<a class="3" href="/pages/page-one/bar/index.html">Page One / Bar</a>
-<a class="3" href="./bar/">Page One / Bar</a>
-<a class="3" href="./bar/index.html">Page One / Bar</a>
+```html
+<!-- # src/example-pages/page-1/index.html -->
 
-<!-- Output -->
-<a class="1" href="https://example.com/docs/">Home</a>
-<a class="2" href="https://example.com/docs/pages/page-two/foo/">Page Two / Foo</a>
-<a class="3" href="https://example.com/docs/pages/page-one/bar/">Page One / Bar</a>
+<a href="/">Home</a>
+<a href="/index.html">Home</a>
+<a href="../../index.html">Home</a>
+
+<a href="/pages/page-1/page-1-sub/">Page 1 sub</a>
+<a href="/pages/page-1/page-1-sub/index.html">Page 1 sub</a>
+<a href="./page-1-sub/">Page 1 sub</a>
+<a href="./page-1-sub/index.html">Page 1 sub</a>
+
+<a href="/pages/page-2/page-2-sub/">Page 2 sub</a>
+<a href="/pages/page-2/page-2-sub/index.html">Page 2 sub</a>
+<a href="../page-2/page-2-sub/">Page 2 sub</a>
+<a href="../page-2/page-2-sub/index.html">Page 2 sub</a>
+```
+
+Output 2:
+
+```html
+<a href="https://example.com/docs/">Home</a>
+<a href="https://example.com/docs/">Home</a>
+<a href="https://example.com/docs/">Home</a>
+
+<a href="https://example.com/docs/example-pages/page-1/page-1-sub/">Page 1 sub</a>
+<a href="https://example.com/docs/example-pages/page-1/page-1-sub/">Page 1 sub</a>
+<a href="https://example.com/docs/example-pages/page-1/page-1-sub/">Page 1 sub</a>
+<a href="https://example.com/docs/example-pages/page-1/page-1-sub/">Page 1 sub</a>
+
+<a href="https://example.com/docs/example-pages/page-2/page-2-sub/">Page 2 sub</a>
+<a href="https://example.com/docs/example-pages/page-2/page-2-sub/">Page 2 sub</a>
+<a href="https://example.com/docs/example-pages/page-2/page-2-sub/">Page 2 sub</a>
+<a href="https://example.com/docs/example-pages/page-2/page-2-sub/">Page 2 sub</a>
 ```
 
 #### Using Markdown in Pug Template
@@ -423,7 +458,7 @@ block content
   :markdown
     # [<%= env.APP_TITLE %>](https://github.com/igoynawamreh/htmlcssjs)
 
-    [Go to page one](/example-pages/page-one/)
+    [Go to page one](/example-pages/page-1/)
 
     [Back to home](/)
 
@@ -437,7 +472,7 @@ block content
 
 #### Using Markdown in EJS Template
 
-You can write Markdown in EJS template using `:markdown:` tag. You can also use EJS syntax inside Markdown.
+You can write Markdown in EJS template using `:markdown:` tag. You can also use EJS inside Markdown.
 
 Note: You cannot use multiple `:markdown:` tags in a single file.
 
@@ -452,7 +487,7 @@ Example:
       <:markdown:>
         # [<%= env.APP_TITLE %>](https://github.com/igoynawamreh/htmlcssjs)
 
-        [Go to page one](/example-pages/page-one/)
+        [Go to page one](/example-pages/page-1/)
 
         [Back to home](/)
 
@@ -474,7 +509,7 @@ Example:
 <:markdown:>
 # [<%= env.APP_TITLE %>](https://github.com/igoynawamreh/htmlcssjs)
 
-[Go to page one](/example-pages/page-one/)
+[Go to page one](/example-pages/page-1/)
 
 [Back to home](/)
 
@@ -494,7 +529,7 @@ You can use EJS/HTML syntax in Pug using `:ejs` filter.
 Example:
 
 ```html
-<!-- src/templates/hello-world.ejs -->
+<!-- hello-world.ejs -->
 
 <div class="hello-world">
   <p>Hello, world!</p>
@@ -502,10 +537,10 @@ Example:
 ```
 
 ```html
-<!-- src/example/pug/page.html -->
+<!-- page.html -->
 
 block content
-  :ejs <%- include('/templates/hello-world.ejs') -%>
+  :ejs <%- include('hello-world.ejs') -%>
 ```
 
 ## Using Library Mode
@@ -515,6 +550,8 @@ Create `index.lib.js` file in the `src` directory to create library. Now, the `h
 By default, the library mode produces `ES` and `UMD` format. You can override the default config in [`htmlcssjs.config.js`](#htmlcssjsconfigjs) to change the formats:
 
 ```js
+// # htmlcssjs.config.js
+
 ...
 build: {
   js: {
@@ -528,7 +565,7 @@ build: {
 Note that when using static assets in library mode, the asset will be inlined (not emitted/extracted), for example:
 
 ```js
-// src/index.lib.js
+// # src/index.lib.js
 
 import image from 'image.png'
 
@@ -551,7 +588,7 @@ You can override and extend the default config by creating `htmlcssjs.config.js`
 
 The default config can be found in [`htmlcssjs.config.js`](https://github.com/igoynawamreh/htmlcssjs/blob/main/htmlcssjs.config.js).
 
-Note:
+Vite options:
 
 - `viteOptions.shared` - [See Vite Shared Options](https://vitejs.dev/config/shared-options.html) except `root`, `base`, `mode`, `plugins`, `publicDir`, `envDir`, `envPrefix`, `appType`
 - `viteOptions.preview` - [See Vite Preview Options](https://vitejs.dev/config/preview-options.html)
@@ -565,7 +602,7 @@ Note:
 Example to override a few config only:
 
 ```js
-// htmlcssjs.config.js
+// # htmlcssjs.config.js
 
 const banner = `
 /*!
@@ -598,14 +635,16 @@ export default {
 You can disable `site`, `dist` or `lib` build:
 
 ```js
-// htmlcssjs.config.js
+// # htmlcssjs.config.js
 
 export default {
   out: {
-    dest: {
-      dist: false,
-      lib: false
-    }
+    site: {
+      dest: './build/site',
+      clean: true
+    },
+    dist: false,
+    lib: false
   }
 }
 ```
@@ -613,7 +652,7 @@ export default {
 Add Vite plugins:
 
 ```js
-// htmlcssjs.config.js
+// # htmlcssjs.config.js
 
 import awesomeVitePlugin from 'x'
 

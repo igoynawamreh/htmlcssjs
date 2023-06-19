@@ -1,1 +1,1 @@
-"use strict";Object.defineProperty(exports,Symbol.toStringTag,{value:"Module"});const appTitle="HTML:CSS:JS";exports.appTitle=appTitle;
+"use strict";Object.defineProperty(exports,Symbol.toStringTag,{value:"Module"});const foo="foo";exports.foo=foo;

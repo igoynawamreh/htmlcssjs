@@ -4,10 +4,11 @@ export default {
     public: './public'
   },
   out: {
-    dest: {
-      site: './site',
-      dist: false,
-      lib: false
-    }
+    site: {
+      dest: './site',
+      clean: true
+    },
+    dist: false,
+    lib: false
   }
 }

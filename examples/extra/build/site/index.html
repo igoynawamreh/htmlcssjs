@@ -3,12 +3,12 @@ my-awesome-theme
 -->
 <!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Home | HTML:CSS:JS</title><link rel="icon" href="/favicon.ico"><script type="module" crossorigin src="/assets/js/script-1bb4ba91.js"></script><link rel="stylesheet" href="/assets/css/style-7a8f64f4.css"></head><body><h1>HTML:CSS:JS</h1><p><img src="/assets/images/html-a0d7237e.png" alt="HTML"><img src="/assets/images/css-4e81a5e2.png" alt="CSS"><img data-image="js" alt="JS"></p><ul><li><a href="/pages/page-one/">Page one</a></li><li><a href="/pages/page-two/">Page two</a></li></ul><p><button type="button" data-alert="appTitle" data-event="click">Click me</button> <button type="button" data-alert="Hello, world!" data-event="dblclick">Double click me</button></p><h2 id="source">Source</h2><pre><code class="hljs language-pug">h1 #{env.APP_TITLE}
 p
-  img(src=&#x27;./assets/logo/html.png&#x27; alt=&#x27;HTML&#x27;)
-  img(src=&#x27;./assets/logo/css.png&#x27; alt=&#x27;CSS&#x27;)
+  img(src=&#x27;./@assets/logo/html.png&#x27; alt=&#x27;HTML&#x27;)
+  img(src=&#x27;./@assets/logo/css.png&#x27; alt=&#x27;CSS&#x27;)
   img(data-image=&#x27;js&#x27; alt=&#x27;JS&#x27;)
 ul
   li: a(href=&#x27;./pages/page-one/&#x27;) Page one
   li: a(href=&#x27;./pages/page-two/&#x27;) Page two
 :ejs
-  &lt;%- include(&#x27;./templates/example-alert.ejs&#x27;) -%&gt;
+  &lt;%- include(&#x27;./@templates/example-alert.ejs&#x27;) -%&gt;
 </code></pre></body></html>

@@ -44,12 +44,12 @@ export default ({ mode }) => {
     envDir: process.cwd(),
     envPrefix: cfg.envPrefix,
     build: {
-      outDir: path.resolve(path.join(process.cwd(), config.out.dest.site)),
+      outDir: path.resolve(path.join(process.cwd(), config.out.site.dest)),
       assetsDir: cfg.assetsDir,
       assetsInlineLimit: 0,
       cssCodeSplit: false,
-      minify: 'production' === mode ? config.build.js.minify : false,
-      cssMinify: 'production' === mode ? config.build.css.minify : false,
+      minify: mode === 'production' ? config.build.js.minify : false,
+      cssMinify: mode === 'production' ? config.build.css.minify : false,
       sourcemap: false,
       target: browserslistToEsbuild(),
       cssTarget: browserslistToEsbuild(),
@@ -72,7 +72,7 @@ export default ({ mode }) => {
         }
       },
       copyPublicDir: true,
-      emptyOutDir: config.out.clean.site
+      emptyOutDir: config.out.site.clean
     },
     plugins: plugins,
     ...viteSharedOptions(config.viteOptions.shared),

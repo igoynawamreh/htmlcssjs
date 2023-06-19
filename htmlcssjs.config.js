@@ -4,15 +4,17 @@ export default {
     public: './public'
   },
   out: {
-    dest: {
-      site: './build/site',
-      dist: './build/dist',
-      lib: './build/lib'
+    site: {
+      dest: './build/site',
+      clean: true
     },
-    clean: {
-      site: true,
-      dist: true,
-      lib: true
+    dist: {
+      dest: './build/dist',
+      clean: true
+    },
+    lib: {
+      dest: './build/lib',
+      clean: true
     }
   },
   build: {
@@ -33,7 +35,7 @@ export default {
       minify: true,
       distFormat: 'umd',
       libFormats: ['es', 'umd'],
-      name: undefined, // default: (pkg.name.replace(/-/g, '_') ?? 'app')
+      name: 'app',
       external: [],
       globals: {}
     },

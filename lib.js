@@ -74,24 +74,24 @@ export function entryFileNames(
   config,
   type = 'site'
 ) {
-  let assetsDir = 'site' === type ? cfg.assetsDir + '/' : ''
+  let assetsDir = type === 'site' ? cfg.assetsDir + '/' : ''
   let name = '[name]'
   let hash = ''
   let format = ''
 
   if (
-    'site' === type ||
-    ('dist' === type && config.build.js.hash) ||
-    ('lib' === type && config.build.js.hash)
+    type === 'site' ||
+    (type === 'dist' && config.build.js.hash) ||
+    (type === 'lib' && config.build.js.hash)
   ) {
     hash = '-[hash]'
   }
 
-  if ('site' === type) {
+  if (type === 'site') {
     name = 'script'
   }
 
-  if (('dist' === type || 'lib' === type) && chunkInfo.isEntry) {
+  if ((type === 'dist' || type === 'lib') && chunkInfo.isEntry) {
     name = config.build.js.filename
   }
 
@@ -103,24 +103,24 @@ export function chunkFileNames(
   config,
   type = 'site'
 ) {
-  let assetsDir = 'site' === type ? cfg.assetsDir + '/' : ''
+  let assetsDir = type === 'site' ? cfg.assetsDir + '/' : ''
   let name = '[name]'
   let hash = ''
   let format = ''
 
   if (
-    'site' === type ||
-    ('dist' === type && config.build.js.hash) ||
-    ('lib' === type && config.build.js.hash)
+    type === 'site' ||
+    (type === 'dist' && config.build.js.hash) ||
+    (type === 'lib' && config.build.js.hash)
   ) {
     hash = '-[hash]'
   }
 
-  if ('site' === type) {
+  if (type === 'site') {
     name = 'script'
   }
 
-  if (('dist' === type || 'lib' === type) && chunkInfo.isEntry) {
+  if ((type === 'dist' || type === 'lib') && chunkInfo.isEntry) {
     name = config.build.js.filename
   }
 
@@ -139,7 +139,7 @@ export function assetFileNames(
   const othersRegExp = new RegExp(/\.(webmanifest)$/i)
 
   let dir = ''
-  if ('.css' === path.extname(assetInfo.name)) {
+  if (path.extname(assetInfo.name) === '.css') {
     dir = 'css'
   } else if (imagesRegExp.test(assetInfo.name)) {
     dir = 'images'
@@ -153,32 +153,55 @@ export function assetFileNames(
     dir = 'others'
   }
 
-  let assetsDir = 'site' === type ? cfg.assetsDir + '/' : ''
+  let assetsDir = type === 'site' ? cfg.assetsDir + '/' : ''
   let name = '[name]'
   let hash = ''
 
   if (
-    'site' === type ||
-    ('css' === dir && 'dist' === type && config.build.css.hash) ||
-    ('css' === dir && 'lib' === type && config.build.css.hash) ||
+    type === 'site' ||
+    (dir === 'css' && type === 'dist' && config.build.css.hash) ||
+    (dir === 'css' && type === 'lib' && config.build.css.hash) ||
     (
-      'css' !== dir &&
-      ('dist' === type || 'lib' === type) &&
+      dir !== 'css' &&
+      (type === 'dist' || type === 'lib') &&
       config.build.assets.hash
     )
   ) {
     hash = '-[hash]'
   }
 
-  if ('site' === type && 'css' === dir) {
+  if (type === 'site' && dir === 'css') {
     name = 'style'
   }
 
-  if (('dist' === type || 'lib' === type) && 'css' === dir) {
+  if ((type === 'dist' || type === 'lib') && dir === 'css') {
     name = config.build.css.filename
   }
 
   return `${assetsDir}${dir}/${name}${hash}[extname]`
+}
+
+export function newProcessEnv(mode, processEnv, pkg) {
+  processEnv = {
+    ...processEnv,
+    ...loadEnv(mode, process.cwd(), cfg.envPrefix)
+  }
+
+  processEnv[cfg.envBaseUrlKey] = (
+    processEnv?.[cfg.envBaseUrlKey] ?? cfg.envDefaultBaseUrl
+  )
+  processEnv[cfg.envAppTitleKey] = (
+    processEnv?.[cfg.envAppTitleKey] ?? cfg.envDefaultAppTitle
+  )
+
+  if (mode === 'development') {
+    try {
+      let newBaseUrl = new URL(processEnv[cfg.envBaseUrlKey])
+      processEnv[cfg.envBaseUrlKey] = newBaseUrl.pathname
+    } catch {}
+  }
+
+  return processEnv
 }
 
 export function getMyPackageJson(path) {
@@ -204,7 +227,7 @@ export function ejsRender(template, filename, viteConfig, config, pkg) {
     template,
     {
       NODE_ENV: viteConfig.mode,
-      isDev: 'development' === viteConfig.mode,
+      isDev: viteConfig.mode === 'development',
       env: process.env,
       pkg: pkg
     },
@@ -293,32 +316,9 @@ export function createBanner(file, viteConfig, config, pkg) {
   template = template.trim()
   content = content.trim()
   if (htmlRegExp.test(file) || jsRegExp.test(file)) {
-    template = '' !== template ? template + '\n' : template
+    template = template !== '' ? template + '\n' : template
   }
   fs.writeFileSync(file, template + content, { encoding: 'utf-8' })
-}
-
-export function newProcessEnv(mode, processEnv, pkg) {
-  processEnv = {
-    ...processEnv,
-    ...loadEnv(mode, process.cwd(), cfg.envPrefix)
-  }
-
-  processEnv[cfg.envBaseUrlKey] = (
-    processEnv?.[cfg.envBaseUrlKey] ?? cfg.envDefaultBaseUrl
-  )
-  processEnv[cfg.envAppTitleKey] = (
-    processEnv?.[cfg.envAppTitleKey] ?? cfg.envDefaultAppTitle
-  )
-
-  if ('development' === mode) {
-    try {
-      let newBaseUrl = new URL(processEnv[cfg.envBaseUrlKey])
-      processEnv[cfg.envBaseUrlKey] = newBaseUrl.pathname
-    } catch {}
-  }
-
-  return processEnv
 }
 
 export function htmlcssjsSite(config, pkg) {
@@ -367,15 +367,13 @@ export function htmlcssjsSite(config, pkg) {
                 urlToFilePath
               ).replace(/\\/g, '/')
               let urlSep = (
-                !base.endsWith('/') && !urlPath.startsWith('/')
-                ? '/'
-                : ''
+                !base.endsWith('/') && !urlPath.startsWith('/') ? '/' : ''
               )
               let newUrl = (base + urlSep + urlPath)
               if (!newUrl.endsWith('.html') && !newUrl.endsWith('/')) {
                 newUrl = newUrl + '/'
               }
-              if (newUrl.endsWith('index.html')) {
+              if (newUrl.endsWith('/index.html')) {
                 newUrl = path.dirname(newUrl) + '/'
               }
               if (newUrl.endsWith('//')) {
@@ -391,7 +389,7 @@ export function htmlcssjsSite(config, pkg) {
               if (!newUrl.endsWith('.html') && !newUrl.endsWith('/')) {
                 newUrl = newUrl + '/'
               }
-              if (newUrl.endsWith('index.html')) {
+              if (newUrl.endsWith('/index.html')) {
                 newUrl = path.dirname(newUrl) + '/'
               }
               if (newUrl.endsWith('//')) {
@@ -415,7 +413,7 @@ export function htmlcssjsSite(config, pkg) {
       }
     },
     closeBundle() {
-      let dir = path.resolve(process.cwd(), config.out.dest.site)
+      let dir = path.resolve(process.cwd(), config.out.site.dest)
       if (fs.existsSync(dir)) {
         const filePaths = findFiles(dir)
         filePaths && filePaths.length && filePaths.forEach((file) => {
@@ -436,7 +434,7 @@ export function htmlcssjsDist(config, pkg) {
       viteConfig = resolvedConfig
     },
     closeBundle() {
-      let dir = path.resolve(process.cwd(), config.out.dest.dist)
+      let dir = path.resolve(process.cwd(), config.out.dist.dest)
       if (fs.existsSync(dir)) {
         const filePaths = findFiles(dir)
         filePaths && filePaths.length && filePaths.forEach((file) => {
@@ -452,12 +450,12 @@ export function htmlcssjsDist(config, pkg) {
 export function htmlcssjsLib(config, pkg) {
   let viteConfig
   return {
-    name: 'htmlcssjs:dist',
+    name: 'htmlcssjs:lib',
     configResolved(resolvedConfig) {
       viteConfig = resolvedConfig
     },
     closeBundle() {
-      let dir = path.resolve(process.cwd(), config.out.dest.lib)
+      let dir = path.resolve(process.cwd(), config.out.lib.dest)
       if (fs.existsSync(dir)) {
         const filePaths = findFiles(dir)
         filePaths && filePaths.length && filePaths.forEach((file) => {
@@ -481,7 +479,7 @@ export function htmlcssjsMinifyHTML(config, pkg) {
     apply: 'build',
     transformIndexHtml: (html) => {
       return (
-        'production' === viteConfig.mode && config.build.html.minify
+        viteConfig.mode === 'production' && config.build.html.minify
         ? minifyHTML(html)
         : html
       )

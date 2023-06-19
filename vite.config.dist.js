@@ -39,12 +39,12 @@ export default ({ mode }) => {
     envDir: process.cwd(),
     envPrefix: cfg.envPrefix,
     build: {
-      outDir: path.resolve(path.join(process.cwd(), config.out.dest.dist)),
+      outDir: path.resolve(path.join(process.cwd(), config.out.dist.dest)),
       assetsDir: cfg.assetsDir,
       assetsInlineLimit: 0,
       cssCodeSplit: false,
-      minify: 'production' === mode ? config.build.js.minify : false,
-      cssMinify: 'production' === mode ? config.build.css.minify : false,
+      minify: mode === 'production' ? config.build.js.minify : false,
+      cssMinify: mode === 'production' ? config.build.css.minify : false,
       sourcemap: false,
       target: browserslistToEsbuild(),
       cssTarget: browserslistToEsbuild(),
@@ -55,7 +55,7 @@ export default ({ mode }) => {
         external: config.build.js.external,
         output: {
           format: config.build.js.distFormat,
-          name: config.build.js.name ?? (pkg?.name ? pkg.name.replace(/-/g, '_') : 'app'),
+          name: config.build.js.name,
           globals: config.build.js.globals,
           entryFileNames: (chunkInfo) => {
             return entryFileNames(chunkInfo, config, 'dist')
@@ -69,7 +69,7 @@ export default ({ mode }) => {
         }
       },
       copyPublicDir: false,
-      emptyOutDir: config.out.clean.dist
+      emptyOutDir: config.out.dist.clean
     },
     plugins: plugins,
     ...viteSharedOptions(config.viteOptions.shared),

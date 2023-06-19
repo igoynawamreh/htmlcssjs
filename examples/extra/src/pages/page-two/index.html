@@ -1,4 +1,4 @@
-extends /templates/simple-layout.pug
+extends /@templates/simple-layout.pug
 
 block variables
   - var title = 'Page two'
@@ -7,7 +7,7 @@ block content
   :markdown
     # <%= env.APP_TITLE %> / Page two
 
-    ![Code](/assets/code.png)
+    ![Code](/@assets/code.png)
 
     [Back to home](/)
 

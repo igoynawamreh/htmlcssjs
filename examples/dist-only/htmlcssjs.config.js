@@ -3,9 +3,12 @@ export default {
     root: './src'
   },
   out: {
-    dest: {
-      dist: './dist'
-    }
+    dist: {
+      dest: './dist',
+      clean: true
+    },
+    site: false,
+    lib: false
   },
   build: {
     js: {

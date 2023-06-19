@@ -13,15 +13,17 @@ const htmlBanner = `
 
 export default {
   out: {
-    dest: {
-      site: './build/site',
-      dist: './build/dist',
-      lib: './build/lib'
+    site: {
+      dest: './build/site',
+      clean: true
     },
-    clean: {
-      site: true,
-      dist: true,
-      lib: true
+    dist: {
+      dest: './build/dist',
+      clean: true
+    },
+    lib: {
+      dest: './build/lib',
+      clean: true
     }
   },
   build: {

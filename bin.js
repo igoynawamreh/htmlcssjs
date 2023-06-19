@@ -13,18 +13,28 @@ const viteConfigDist = `node_modules/${myPkg.name}/vite.config.dist.js`
 const viteConfigLib = `node_modules/${myPkg.name}/vite.config.lib.js`
 
 const command = argv?.[2]
+const allowed = (
+  command === 'dev' ||
+  command === 'prod' ||
+  command === 'preview' ||
+  command === 'vite'
+)
+const htmlIndex = path.resolve(
+  process.cwd(),
+  path.join(config.src.root, 'index.html')
+)
+const jsIndex = path.resolve(
+  process.cwd(),
+  path.join(config.src.root, 'index.js')
+)
+const libIndex = path.resolve(
+  process.cwd(),
+  path.join(config.src.root, 'index.lib.js')
+)
 
-if (
-  (argv.length > 3 && 'vite' !== command) ||
-  (
-    'dev' !== command &&
-    'prod' !== command &&
-    'preview' !== command &&
-    'vite' !== command
-  )
-) {
+if ((argv.length > 3 && command !== 'vite') || !allowed) {
   console.log()
-  console.log('Invalid command.')
+  console.log('Invalid command')
   console.log()
   console.log('Available commands:')
   console.log()
@@ -35,33 +45,15 @@ if (
   process.exit(1)
 }
 
-if ('dev' === command) {
-  if (
-    fs.existsSync(path.resolve(
-      process.cwd(),
-      path.join(config.src.root, 'index.html')
-    )) &&
-    false !== config.out.dest.site
-  ) {
+if (command === 'dev') {
+  if (fs.existsSync(htmlIndex) && config.out.site !== false) {
     spawn('vite', ['--config', viteConfigSite], {
       stdio: 'inherit',
       cwd: process.cwd()
     })
   } else {
-    if (
-      fs.existsSync(path.resolve(
-        process.cwd(),
-        path.join(config.src.root, 'index.js')
-      )) &&
-      false !== config.out.dest.dist
-    ) {
-      if (
-        fs.existsSync(path.resolve(
-          process.cwd(),
-          path.join(config.src.root, 'index.lib.js')
-        )) &&
-        false !== config.out.dest.lib
-      ) {
+    if (fs.existsSync(jsIndex) && config.out.dist !== false) {
+      if (fs.existsSync(libIndex) && config.out.lib !== false) {
         spawn('nodemon', [
           '--watch', config.src.root,
           '--ext', '*',
@@ -81,13 +73,7 @@ if ('dev' === command) {
         })
       }
     } else {
-      if (
-        fs.existsSync(path.resolve(
-          process.cwd(),
-          path.join(config.src.root, 'index.lib.js')
-        )) &&
-        false !== config.out.dest.lib
-      ) {
+      if (fs.existsSync(libIndex) && config.out.lib !== false) {
         spawn('nodemon', [
           '--watch', config.src.root,
           '--ext', '*',
@@ -101,68 +87,41 @@ if ('dev' === command) {
   }
 
   if (
-    !fs.existsSync(path.resolve(
-      process.cwd(),
-      path.join(config.src.root, 'index.html')
-    )) &&
-    !fs.existsSync(path.resolve(
-      process.cwd(),
-      path.join(config.src.root, 'index.js')
-    )) &&
-    !fs.existsSync(path.resolve(
-      process.cwd(),
-      path.join(config.src.root, 'index.lib.js')
-    )) &&
-    false !== config.out.dest.site &&
-    false !== config.out.dest.dist &&
-    false !== config.out.dest.lib
+    !fs.existsSync(htmlIndex) &&
+    !fs.existsSync(jsIndex) &&
+    !fs.existsSync(libIndex) &&
+    config.out.site !== false &&
+    config.out.dist !== false &&
+    config.out.lib !== false
   ) {
     console.log('Error: need at least one entry point index.html/index.js/index.lib.js')
   }
 
   if (
-    false === config.out.dest.site &&
-    false === config.out.dest.dist &&
-    false === config.out.dest.lib
+    config.out.site === false &&
+    config.out.dist === false &&
+    config.out.lib === false
   ) {
     console.log('All config.out are disabled')
   }
 }
 
-if ('prod' === command) {
-  if (
-    fs.existsSync(path.resolve(
-      process.cwd(),
-      path.join(config.src.root, 'index.html')
-    )) &&
-    false !== config.out.dest.site
-  ) {
+if (command === 'prod') {
+  if (fs.existsSync(htmlIndex) && config.out.site !== false) {
     spawn('vite', ['build', '--config', viteConfigSite], {
       stdio: 'inherit',
       cwd: process.cwd()
     })
   }
 
-  if (
-    fs.existsSync(path.resolve(
-      process.cwd(),
-      path.join(config.src.root, 'index.js')
-    )) &&
-    false !== config.out.dest.dist
-  ) {
+  if (fs.existsSync(jsIndex) && config.out.dist !== false) {
     spawn('vite', ['build', '--config', viteConfigDist], {
       stdio: 'inherit',
       cwd: process.cwd()
     })
   }
 
-  if (
-    fs.existsSync(path.resolve(
-      process.cwd(),
-      path.join(config.src.root, 'index.lib.js')
-    )) &&
-    false !== config.out.dest.lib
-  ) {
+  if (fs.existsSync(libIndex) && config.out.lib !== false) {
     spawn('vite', ['build', '--config', viteConfigLib], {
       stdio: 'inherit',
       cwd: process.cwd()
@@ -170,64 +129,43 @@ if ('prod' === command) {
   }
 
   if (
-    !fs.existsSync(path.resolve(
-      process.cwd(),
-      path.join(config.src.root, 'index.html')
-    )) &&
-    !fs.existsSync(path.resolve(
-      process.cwd(),
-      path.join(config.src.root, 'index.js')
-    )) &&
-    !fs.existsSync(path.resolve(
-      process.cwd(),
-      path.join(config.src.root, 'index.lib.js')
-    )) &&
-    false !== config.out.dest.site &&
-    false !== config.out.dest.dist &&
-    false !== config.out.dest.lib
+    !fs.existsSync(htmlIndex) &&
+    !fs.existsSync(jsIndex) &&
+    !fs.existsSync(libIndex) &&
+    config.out.site !== false &&
+    config.out.dist !== false &&
+    config.out.lib !== false
   ) {
     console.log('Error: need at least one entry point index.html/index.js/index.lib.js')
   }
 
   if (
-    false === config.out.dest.site &&
-    false === config.out.dest.dist &&
-    false === config.out.dest.lib
+    config.out.site === false &&
+    config.out.dist === false &&
+    config.out.lib === false
   ) {
     console.log('All config.out are disabled')
   }
 }
 
-if ('preview' === command) {
-  if (
-    fs.existsSync(path.resolve(
-      process.cwd(),
-      path.join(config.src.root, 'index.html')
-    )) &&
-    false !== config.out.dest.site
-  ) {
+if (command === 'preview') {
+  if (fs.existsSync(htmlIndex) && config.out.site !== false) {
     spawn('vite', ['preview', '--config', viteConfigSite], {
       stdio: 'inherit',
       cwd: process.cwd()
     })
   }
 
-  if (
-    !fs.existsSync(path.resolve(
-      process.cwd(),
-      path.join(config.src.root, 'index.html')
-    )) &&
-    false !== config.out.dest.site
-  ) {
-    console.log('Missing index.html entry point.')
+  if (!fs.existsSync(htmlIndex) && config.out.site !== false) {
+    console.log('Missing index.html entry point')
   }
 
-  if (false === config.out.dest.site) {
-    console.log('The config.out.dest.site is disabled')
+  if (config.out.site === false) {
+    console.log('The config.out.site.dest is disabled')
   }
 }
 
-if ('vite' === command) {
+if (command === 'vite') {
   spawn('vite', [...argv.splice(3)], {
     stdio: 'inherit',
     cwd: process.cwd()

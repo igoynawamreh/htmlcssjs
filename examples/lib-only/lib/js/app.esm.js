@@ -1,4 +1,4 @@
-const appTitle = "HTML:CSS:JS";
+const foo = "foo";
 export {
-  appTitle
+  foo
 };

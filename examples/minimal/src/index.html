@@ -1,11 +1,13 @@
-<%- include('./templates/before.ejs', {
+<%- include('./@templates/before.ejs', {
   title: 'Home'
 }) -%>
 
 <:markdown:>
 # <%= env.APP_TITLE %>
 
-![HTML](./images/html.png) ![CSS](./images/css.png) ![JS](./images/js.png)
+![HTML](./@images/html.png) ![CSS](./@images/css.png) ![JS](./@images/js.png)
+
+[Page 1](/my-pages/page-1.html)
 </:markdown:>
 
-<%- include('./templates/after.ejs') -%>
+<%- include('./@templates/after.ejs') -%>

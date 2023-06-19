@@ -1,17 +1,17 @@
-import './css/index.css'
-import './scss/index.scss'
-import './stylus/index.styl'
-import './less/index.less'
+import './@css/index.css'
+import './@scss/index.scss'
+import './@stylus/index.styl'
+import './@less/index.less'
 import 'highlight.js/styles/github.css'
 
-import fooClasses from './css-module/foo.module.css'
-import barClasses from './css-module/bar.module.scss'
+import fooClasses from './@css-module/foo.module.css'
+import barClasses from './@css-module/bar.module.scss'
 
-import { myAlert } from './js/foo'
+import { myAlert } from './@js/foo'
 
-import htmlImage from './assets/logo/html.png'
-import cssImage from './assets/logo/css.png'
-import jsImage from './assets/logo/js.png'
+import htmlImage from './@assets/logo/html.png'
+import cssImage from './@assets/logo/css.png'
+import jsImage from './@assets/logo/js.png'
 
 const DATA = {
   text: {
