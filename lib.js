@@ -337,17 +337,28 @@ export function htmlcssjsSite(config, pkg) {
 
         html = ejsRender(html, ctx.filename, viteConfig, config, pkg)
 
-        let mdPattern = new RegExp(`<:markdown:>((.|\\n)*?)</:markdown:>`)
-        let mdContent = mdPattern.exec(html)
-        mdContent = mdContent ? mdContent[1] : null
-        mdContent = (
-          mdContent
-          ? markdownRender(
-              mdContent.trim(), ctx.filename, viteConfig, config, pkg
-            )
-          : ''
+        html = html.replace(
+          new RegExp(`(^|\\n)([ \\t]*)<:markdown:>([\\s\\S]*?)</:markdown:>`, 'g'),
+          (full, start, dent, mdContent) => {
+            if (mdContent) {
+              if (dent) {
+                // Remove outer HTML indent
+                mdContent = mdContent.split('\n' + dent).join('\n');
+              }
+              // console.log('<pre>' + mdContent + '</pre>');
+              let m = /^\n([ \t]+)/.exec(mdContent);
+              if (m && m[1]) {
+                // Remove inner HTML indent
+                mdContent = mdContent.split('\n' + m[1]).join('\n');
+              }
+              // console.log('<pre>' + mdContent + '</pre>');
+              return markdownRender(
+                mdContent, ctx.filename, viteConfig, config, pkg
+              )
+            }
+            return ''
+          }
         )
-        html = html.replace(/<:markdown:>[\s\S]*?<\/:markdown:>/g, mdContent)
 
         html = html.replace(
           /(<a\s*[^>]*(href="([^>^\"]*)")[^>]*>)([^<]+)(<\/a>)/gi,

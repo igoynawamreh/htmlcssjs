@@ -10,4 +10,57 @@
 [Page 1](/my-pages/page-1.html)
 </:markdown:>
 
+<!-- 0 indent level -->
+<:markdown:>
+This is a **bold** text.
+
+    This is a code block.
+
+This is a paragraph.
+</:markdown:>
+
+  <!-- 2 indent level -->
+  <:markdown:>
+  This is a **bold** text.
+
+      This is a code block.
+
+  This is a paragraph.
+  </:markdown:>
+
+  <!-- 2 indent level with 2 inner indent level -->
+  <:markdown:>
+    This is a **bold** text.
+
+        This is a code block.
+
+    This is a paragraph.
+  </:markdown:>
+
+  <div>
+    <!-- 4 indent level with 2 inner indent level -->
+    <:markdown:>
+      This is a **bold** text.
+
+          This is a code block.
+
+      This is a paragraph.
+    </:markdown:>
+  </div>
+
+    <!-- 4 indent level with 4 inner indent level -->
+    <:markdown:>
+        This is a **bold** text.
+
+            This is a code block.
+
+        This is a paragraph.
+    </:markdown:>
+
+<!-- 0 indent level with no line break -->
+<:markdown:>This is a **bold** text.</:markdown:>
+
+  <!-- 2 indent level with no line break -->
+  <:markdown:>This is a **bold** text.</:markdown:>
+
 <%- include('./@templates/after.ejs') -%>
