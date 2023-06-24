@@ -34,7 +34,7 @@ export default {
   build: {
     html: {
       banner: htmlBanner,
-      minify: false
+      minify: true
     },
     css: {
       filename: 'app',

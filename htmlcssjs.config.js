@@ -22,7 +22,7 @@ export default {
   build: {
     html: {
       banner: '',
-      minify: false
+      minify: true
     },
     css: {
       filename: 'app',
