@@ -3,7 +3,19 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title><%= locals.title ? title + ' | ' : '' %><%= env.APP_TITLE %></title>
+
+  <% if (page.isHomepage) { %>
+    <title><%= data.title %></title>
+  <% } else { %>
+    <title><%= page.data.title ? page.data.title + ' | ' : '' %><%= data.title %></title>
+  <% } %>
+
   <link rel="icon" href="/favicon.ico">
 </head>
 <body>
+
+<nav>
+  <% data.manual_menu.forEach((link) => { %>
+    <a href="<%= link.url %>"><%= link.text %></a>
+  <% }) %>
+</nav>

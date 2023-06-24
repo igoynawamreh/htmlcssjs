@@ -1,17 +1,22 @@
 const banner = `
 /*!
- * Package name: <%= pkg.name %>
- * App title: <%= env.APP_TITLE %>
+ * <%= data.title %>
  */
 `
 
 const htmlBanner = `
 <!--
-<%= pkg.name %>
+<%= data.title %>
 -->
 `
 
 export default {
+  base: '/',
+  src: {
+    root: './src',
+    public: './public',
+    data: './src/data.yml'
+  },
   out: {
     site: {
       dest: './build/site',
@@ -29,7 +34,7 @@ export default {
   build: {
     html: {
       banner: htmlBanner,
-      minify: true
+      minify: false
     },
     css: {
       filename: 'app',

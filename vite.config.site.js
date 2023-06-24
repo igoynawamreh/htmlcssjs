@@ -5,7 +5,7 @@ import {
   cfg,
   config,
   pkg
-} from './data'
+} from './config'
 import {
   assetFileNames,
   browserslistToEsbuild,
@@ -35,10 +35,19 @@ if (
 }
 
 export default ({ mode }) => {
-  process.env = newProcessEnv(mode, process.env, pkg)
+  process.env = newProcessEnv(mode, process.env, config)
+
+  let base = config.base
+  if (mode === 'development') {
+    try {
+      let newBase = new URL(base)
+      base = newBase.pathname
+    } catch {}
+  }
+
   return defineConfig({
     appType: 'mpa',
-    base: process.env[cfg.envBaseUrlKey],
+    base: base,
     root: path.resolve(path.join(process.cwd(), config.src.root)),
     publicDir: path.resolve(path.join(process.cwd(), config.src.public)),
     envDir: process.cwd(),

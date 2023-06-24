@@ -1,66 +1,46 @@
-<%- include('./@templates/before.ejs', {
-  title: 'Home'
-}) -%>
+---
+title: Home
+---
 
-<:markdown:>
-# <%= env.APP_TITLE %>
+<%
+var blogIndex = find_page('blog/index.html')
+var blogChildren = find_pages('blog', false, false)
+var pagesIndex = find_page('pages/index.html')
+var pagesChildren = find_pages('pages', false, false)
+%>
 
-![HTML](./@images/html.png) ![CSS](./@images/css.png) ![JS](./@images/js.png)
+<%- include('./@templates/before.ejs') -%>
 
-[Page 1](/my-pages/page-1.html)
-</:markdown:>
+<h1><%= data.title %></h1>
 
-<!-- 0 indent level -->
-<:markdown:>
-This is a **bold** text.
+<p>
+  <img src="/@images/html.png" alt="HTML">
+  <img src="/@images/css.png" alt="CSS">
+  <img src="/@images/js.png" alt="JS">
+</p>
 
-    This is a code block.
+<ul>
+  <% data.links.forEach((link) => { %>
+    <li>
+      <a href="<%= link.url %>"><%= link.text %></a>
+    </li>
+  <% }) %>
+</ul>
 
-This is a paragraph.
-</:markdown:>
+<h2><%= blogIndex.data.title %></h2>
+<ul>
+  <% blogChildren.forEach((p) => { %>
+    <li>
+      <a href="<%= p.url %>"><%= p.data.title %></a>
+    </li>
+  <% }) %>
+</ul>
 
-  <!-- 2 indent level -->
-  <:markdown:>
-  This is a **bold** text.
-
-      This is a code block.
-
-  This is a paragraph.
-  </:markdown:>
-
-  <!-- 2 indent level with 2 inner indent level -->
-  <:markdown:>
-    This is a **bold** text.
-
-        This is a code block.
-
-    This is a paragraph.
-  </:markdown:>
-
-  <div>
-    <!-- 4 indent level with 2 inner indent level -->
-    <:markdown:>
-      This is a **bold** text.
-
-          This is a code block.
-
-      This is a paragraph.
-    </:markdown:>
-  </div>
-
-    <!-- 4 indent level with 4 inner indent level -->
-    <:markdown:>
-        This is a **bold** text.
-
-            This is a code block.
-
-        This is a paragraph.
-    </:markdown:>
-
-<!-- 0 indent level with no line break -->
-<:markdown:>This is a **bold** text.</:markdown:>
-
-  <!-- 2 indent level with no line break -->
-  <:markdown:>This is a **bold** text.</:markdown:>
-
-<%- include('./@templates/after.ejs') -%>
+<h2><%= pagesIndex.data.title %></h2>
+<ul>
+  <% pagesChildren.forEach((p) => { %>
+    <li>
+      <a href="<%= p.url %>"><%= p.data.title %></a>
+    </li>
+  <% }) %>
+</ul>

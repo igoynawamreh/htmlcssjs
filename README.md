@@ -78,7 +78,7 @@ You just need at least one entry point `index.html`, `index.js` and/or [`index.l
 │       └── index.html
 ├── public/
 └── src/
-    ├── @example-files/
+    ├── @example-assets/
     │   ├── example-images/
     │   │   └── foo.png
     │   ├── example-fonts/
@@ -141,18 +141,20 @@ The difference between `build/dist` and `build/site`:
 
 ## Guide
 
-### Configure Base URL
+### Configure Base Path
 
-If you want to serve the `build/site` to a hosting service you must specify the `APP_BASE_URL` option in `.env` file.
+If you want to serve the `build/site` to a hosting service you must specify the `base` option in [`htmlcssjs.config.js`](#htmlcssjsconfigjs) file.
 
-For example, if you want to serve the pages to `https://example.com/`, then set `APP_BASE_URL` to `https://example.com/` or just `/`.
+For example, if you want to serve the `build/site` to `https://example.com/`, then set `base` to `https://example.com/` or just `/`.
 
-Or, if you want to serve the pages to `https://example.com/my-themes/`, then set `APP_BASE_URL` to `https://example.com/my-themes/` or just `/my-themes/`.
+Or, if you want to serve the `build/site` to `https://example.com/my-themes/`, then set `base` to `https://example.com/my-themes/` or just `/my-themes/`.
 
-```shell
-# .env
+```js
+// # htmlcssjs.config.js
 
-APP_BASE_URL="/my-themes/"
+export default {
+  base: '/my-themes/'
+}
 ```
 
 ### Targeting Browser
@@ -184,86 +186,166 @@ The env variables is loaded from the following files in the root directory:
 
 An env file for a specific mode (e.g. `.env.production`) will take higher priority than a generic one (e.g. `.env`).
 
-#### Using Env Variables
+#### Env Variable Prefix
 
 Only variables prefixed with `APP_` are exposed.
 
-The env variables is only accessible in HTML and JS.
+### Using Variables
+
+You can use variables loaded from the following files:
+
+- `src/data.yml` (`data`)
+- `.env` (`env`)
+- `htmlcssjs.config.js` (`config`)
+- `package.json` (`pkg`)
 
 HTML (EJS):
 
 ```html
+<p><%= data.key_name %></p>
 <p><%= env.APP_KEY_NAME %></p>
+<p><%= config.key_name %></p>
+<p><%= pkg.key_name %></p>
 ```
 
 HTML (Pug):
 
 ```html
+p #{data.key_name}
 p #{env.APP_KEY_NAME}
+p #{config.key_name}
+p #{pkg.key_name}
 ```
 
 JS:
 
 ```js
-console.log(import.meta.env.APP_KEY_NAME)
+console.log(import.meta.env.APP_DATA.key_name) // src/data.yml
+console.log(import.meta.env.APP_KEY_NAME) // .env
+console.log(import.meta.env.APP_CONFIG.key_name) // htmlcssjs.config.js
+console.log(import.meta.env.APP_PKG.key_name) // package.json
+```
+
+### Using YAML Front Matter Block in HTML Page
+
+You can use YAML front matter block in HTML page and use the data using `page` or `find_page()` variable. You can also get data from all pages using `pages` or `find_pages()` variable:
+
+```js
+find_page(pathToPage) // 'path/to/page.html'
+find_pages(parent = 'pages', oneLevel = false, includeParentPage = true, indexFilesOnly = false)
+```
+
+Predefined variables:
+
+- `page.content`
+- `page.data`
+- `page.url` or `page.path`
+- `page.isHomepage`
+- `page.isEmpty`
+
+Basic example:
+
+```html
+<!-- # src/index.html -->
+
+---
+title: Page Title
+---
+
+Content
+```
+
+- `page.data.title`: Page Title
+- `page.content`: Content
+- `page.url`: `/index.html`
+- `page.isHomepage`: `true`
+- `page.isEmpty`: `false`
+
+Example using EJS:
+
+```html
+<!-- # src/pages/page-1.html -->
+
+---
+title: Page 1
+---
+
+<h1><%= page.data.title %></h1>
+```
+
+```html
+<!-- # src/pages/page-2.html -->
+
+---
+title: Page 2
+---
+
+<h1><%= page.data.title %></h1>
+```
+
+```html
+<!-- # src/pages/index.html -->
+
+---
+title: Pages
+---
+
+<h1><%= page.data.title %></h1>
+
+<ul>
+  <% find_pages('pages', true, false).forEach((p) => { %>
+    <li>
+      <a href="<%= p.url %>"><%= p.data.title %></a>
+    </li>
+  <% }) %>
+</ul>
+```
+
+```html
+<!-- # src/index.html -->
+
+---
+title: Home
+---
+
+<% var nav = find_pages('root', true, true, true) %>
+
+<nav>
+  <% nav.forEach((p) => { %>
+    <a href="<%= p.url %>"><%= p.data.title %></a>
+  <% }) %>
+</nav>
 ```
 
 ### Source Code and Static Assets
-
-#### Example Project Structure
-
-```text
-.
-└── src/
-    ├── @example-files/
-    │   ├── example-images/
-    │   │   └── foo.png
-    │   ├── example-fonts/
-    │   │   └── foo.woff2
-    │   └── example-media/
-    │       └── foo.mp4
-    ├── @example-css/
-    │   └── foo.css
-    ├── @example-js/
-    │   └── foo.js
-    ├── @example-templates/
-    │   └── hero.ejs
-    ├── example-pages/
-    │   ├── foo.html
-    │   ├── page-1/
-    │   │   ├── page-1-sub/
-    │   │   │   └── index.html
-    │   │   ├── bar.html
-    │   │   ├── index.html
-    │   │   └── image.png
-    │   └── page-2/
-    │       ├── page-2-sub/
-    │       │   └── index.html
-    │       ├── baz.html
-    │       ├── index.html
-    │       └── image.png
-    ├── index.html
-    └── index.js
-```
 
 #### Paths
 
 - `/file.ext`: Relative to the `src` directory.
 - `./file.ext` or `../../file.ext`: Relative to the current file directory.
 
+For example:
+
+- Page path: `src/pages/page.html`
+- Image path: `src/images/image.png`
+
+```html
+<!-- # src/pages/page.html -->
+
+<!-- Relative to the `src` directory -->
+<img src="/images/image.png">
+<!-- Relative to the current file directory -->
+<img src="../images/image.png">
+```
+
 #### HTML Template
 
-We uses [EJS](https://ejs.co/) and [Pug](https://pugjs.org/) for HTML templating.
+You can use [EJS](https://ejs.co/) and [Pug](https://pugjs.org/) in HTML page.
 
 #### Importing JS Entry Point (`src/index.js`) to HTML page
 
 ```html
-<!-- # src/index.html -->
-
-<body>
-  ...
-  <script type="module" src="./index.js"></script>
-</body>
+<script type="module" src="/index.js"></script>
 ```
 
 #### Importing Styles to JS Entry Point (`src/index.js`)
@@ -271,51 +353,39 @@ We uses [EJS](https://ejs.co/) and [Pug](https://pugjs.org/) for HTML templating
 ```js
 // # src/index.js
 
-import './@example-css/foo.css'
-// import './@example-css/foo.scss'
-// import './@example-css/foo.styl'
-// import './@example-css/foo.less'
+import './css/foo.css'
+// import './css/foo.scss'
+// import './css/foo.styl'
+// import './css/foo.less'
 ```
 
 #### Using Static Assets in HTML, CSS and JS
 
-EJS:
+HTML (EJS):
 
 ```html
-<!-- # src/example-pages/page-1/index.html -->
-
-<img src="./image.png" alt="Image">
-<img src="/example-pages/page-2/image.png" alt="Image">
-<img src="/@example-files/example-images/foo.png" alt="Image">
+<img src="/path/to/image.png">
 ```
 
-Pug:
+HTML (Pug):
 
 ```html
-<!-- # src/example-pages/page-1/index.html -->
-
-img(src='./image.png' alt='Image')
-img(src='/example-pages/page-2/image.png' alt='Image')
-img(src='/@example-files/example-images/foo.png' alt='Image')
+img(src='/path/to/image.png')
 ```
 
 CSS:
 
 ```css
-/* # src/@example-css/foo.css */
-
 .foo {
-  background-color: url(../@example-files/example-images/foo.png);
+  background-color: url(/path/to/image.png);
 }
 ```
 
 JS:
 
 ```js
-// # src/@example-js/foo.js
-
-import image from '../@example-files/example-images/foo.png'
-document.querySelector('#hero-img').src = image
+import image from '/path/to/image.png'
+document.querySelector('#el').src = image
 ```
 
 #### Including HTML Template
@@ -323,52 +393,18 @@ document.querySelector('#hero-img').src = image
 EJS:
 
 ```html
-<!-- # src/index.html -->
-
-<%- include('./@example-templates/hero.ejs') -%>
-```
-
-```html
-<!-- # src/example-pages/page-1/index.html -->
-
-<%- include('/@example-templates/hero.ejs') -%>
+<%- include('/path/to/template.ejs') -%>
 ```
 
 Pug:
 
 ```html
-<!-- # src/index.html -->
-
-include ./@example-templates/hero.pug
-```
-
-```html
-<!-- # src/example-pages/page-1/index.html -->
-
-include /@example-templates/hero.pug
-```
-
-#### Using Variables in HTML
-
-You can use data from `.env` and `package.json` in HTML/Template files.
-
-EJS:
-
-```html
-<p><%= env.APP_KEY_NAME %></p>
-<p><%= pkg.keyName %></p>
-```
-
-Pug:
-
-```html
-p #{env.APP_KEY_NAME}
-p #{pkg.keyName}
+include /path/to/template.pug
 ```
 
 #### Links Between Pages
 
-Links in HTML page will be automatically resolved based on the `APP_BASE_URL` value. Let's say the value of `APP_BASE_URL` in `.env` file is `https://example.com/docs/`.
+Links in HTML page will be automatically resolved based on the `base` value in [`htmlcssjs.config.js`](#htmlcssjsconfigjs).
 
 Paths:
 
@@ -377,7 +413,9 @@ Paths:
 - `/path/foo/`: Same as `/path/foo/index.html`
 - `./path/foo/`: Same as `./path/foo/index.html`
 
-Example 1:
+Example:
+
+Let's say the value of `base` option is `https://example.com/docs/`.
 
 ```html
 <!-- # src/index.html -->
@@ -390,75 +428,31 @@ Example 1:
 <a href="/pages/page-1/index.html">Page 1</a>
 <a href="./pages/page-1/">Page 1</a>
 <a href="./pages/page-1/index.html">Page 1</a>
-
-<a href="/pages/page-1/bar.html">Bar</a>
-<a href="./pages/page-1/bar.html">Bar</a>
 ```
 
-Output 1:
+Output:
 
 ```html
 <a href="https://example.com/docs/">Home</a>
 <a href="https://example.com/docs/">Home</a>
 <a href="https://example.com/docs/">Home</a>
 
-<a href="https://example.com/docs/example-pages/page-1/">Page 1</a>
-<a href="https://example.com/docs/example-pages/page-1/">Page 1</a>
-<a href="https://example.com/docs/example-pages/page-1/">Page 1</a>
-<a href="https://example.com/docs/example-pages/page-1/">Page 1</a>
-
-<a href="https://example.com/docs/example-pages/page-1/bar.html">Bar</a>
-<a href="https://example.com/docs/example-pages/page-1/bar.html">Bar</a>
+<a href="https://example.com/docs/pages/page-1/">Page 1</a>
+<a href="https://example.com/docs/pages/page-1/">Page 1</a>
+<a href="https://example.com/docs/pages/page-1/">Page 1</a>
+<a href="https://example.com/docs/pages/page-1/">Page 1</a>
 ```
 
-Example 2:
+#### Using Markdown in Pug
 
-```html
-<!-- # src/example-pages/page-1/index.html -->
-
-<a href="/">Home</a>
-<a href="/index.html">Home</a>
-<a href="../../index.html">Home</a>
-
-<a href="/pages/page-1/page-1-sub/">Page 1 sub</a>
-<a href="/pages/page-1/page-1-sub/index.html">Page 1 sub</a>
-<a href="./page-1-sub/">Page 1 sub</a>
-<a href="./page-1-sub/index.html">Page 1 sub</a>
-
-<a href="/pages/page-2/page-2-sub/">Page 2 sub</a>
-<a href="/pages/page-2/page-2-sub/index.html">Page 2 sub</a>
-<a href="../page-2/page-2-sub/">Page 2 sub</a>
-<a href="../page-2/page-2-sub/index.html">Page 2 sub</a>
-```
-
-Output 2:
-
-```html
-<a href="https://example.com/docs/">Home</a>
-<a href="https://example.com/docs/">Home</a>
-<a href="https://example.com/docs/">Home</a>
-
-<a href="https://example.com/docs/example-pages/page-1/page-1-sub/">Page 1 sub</a>
-<a href="https://example.com/docs/example-pages/page-1/page-1-sub/">Page 1 sub</a>
-<a href="https://example.com/docs/example-pages/page-1/page-1-sub/">Page 1 sub</a>
-<a href="https://example.com/docs/example-pages/page-1/page-1-sub/">Page 1 sub</a>
-
-<a href="https://example.com/docs/example-pages/page-2/page-2-sub/">Page 2 sub</a>
-<a href="https://example.com/docs/example-pages/page-2/page-2-sub/">Page 2 sub</a>
-<a href="https://example.com/docs/example-pages/page-2/page-2-sub/">Page 2 sub</a>
-<a href="https://example.com/docs/example-pages/page-2/page-2-sub/">Page 2 sub</a>
-```
-
-#### Using Markdown in Pug Template
-
-You can write Markdown in Pug template using `:markdown` filter. You can also use EJS syntax inside Markdown.
+You can write Markdown in Pug template using `:markdown` filter. You can also use EJS syntax inside the `:markdown` filter.
 
 ```html
 block content
   :markdown
-    # [<%= env.APP_TITLE %>](https://github.com/igoynawamreh/htmlcssjs)
+    # [<%= data.title %>](https://github.com/igoynawamreh/htmlcssjs)
 
-    [Go to page one](/example-pages/page-1/)
+    [Go to page one](/path/to/page-1/)
 
     [Back to home](/)
 
@@ -470,24 +464,20 @@ block content
   :markdown(pug) include ./path/to/page.md
 ```
 
-#### Using Markdown in EJS Template
+#### Using Markdown in EJS/HTML
 
-You can write Markdown in EJS template using `:markdown:` tag. You can also use EJS inside Markdown.
-
-Note: You cannot use multiple `:markdown:` tags in a single file.
+You can write Markdown in EJS/HTML template using `:markdown:` tag. You can also use EJS inside the `:markdown:` tag.
 
 Example:
-
-**DON'T DO THIS**
 
 ```html
 <html>
   <body>
     <div class="content">
       <:markdown:>
-        # [<%= env.APP_TITLE %>](https://github.com/igoynawamreh/htmlcssjs)
+        # [<%= data.title %>](https://github.com/igoynawamreh/htmlcssjs)
 
-        [Go to page one](/example-pages/page-1/)
+        [Go to page one](/path/to/page-1/)
 
         [Back to home](/)
 
@@ -496,27 +486,20 @@ Example:
         <%- include('./path/to/file.md') -%>
       </:markdown:>
     </div>
-  </body>
-<html>
-```
 
-**DO THIS INSTEAD**
-
-```html
-<html>
-  <body>
-    <div class="content">
-<:markdown:>
-# [<%= env.APP_TITLE %>](https://github.com/igoynawamreh/htmlcssjs)
-
-[Go to page one](/example-pages/page-1/)
-
-[Back to home](/)
-
-![My Image](./path/to/image.png)
-
-<%- include('./path/to/file.md') -%>
-</:markdown:>
+    <div class="code">
+      <:markdown:>
+        ```js
+        console.log('M')
+        console.log('A')
+        console.log('R')
+        console.log('K')
+        console.log('D')
+        console.log('O')
+        console.log('W')
+        console.log('N')
+        ```
+      </:markdown:>
     </div>
   </body>
 <html>
@@ -540,7 +523,7 @@ Example:
 <!-- page.html -->
 
 block content
-  :ejs <%- include('hello-world.ejs') -%>
+  :ejs <%- include('./hello-world.ejs') -%>
 ```
 
 ## Using Library Mode
@@ -607,7 +590,7 @@ Example to override a few config only:
 const banner = `
 /*!
  * Package name: <%= pkg.name %>
- * App title: <%= env.APP_TITLE %>
+ * App title: <%= data.title %>
  */
 `
 
@@ -632,7 +615,7 @@ export default {
 }
 ```
 
-You can disable `site`, `dist` or `lib` build:
+You can disable `site`, `dist` and/or `lib` build:
 
 ```js
 // # htmlcssjs.config.js

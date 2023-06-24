@@ -1,14 +1,11 @@
+---
+title: Projects
+---
+
 extends /@templates/simple-layout.pug
 
-block variables
-  - var title = 'My Projects'
-
 block content
-  :markdown
-    # My Projects
-
-    - [Project 1](#)
-    - [Project 2](#)
-    - [Project 3](#)
-    - [Project 4](#)
-    - [Project 5](#)
+  h1 #{page.data.title}
+  ul
+    each project in data.projects
+      li: a(href=project.url)= project.name

@@ -1,0 +1,11 @@
+---
+title: With Sub Pages
+---
+
+extends /@templates/simple-layout.pug
+
+block content
+  h1 #{page.data.title}
+  ul
+    each p in find_pages('pages/with-sub-pages', true, false)
+      li: a(href=p.url)= p.data.title

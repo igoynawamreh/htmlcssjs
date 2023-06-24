@@ -1,12 +1,10 @@
+---
+title: Page 1
+---
+
 extends /@templates/simple-layout.pug
 
-block variables
-  - var title = 'Page 1'
-
 block content
-  :markdown
-    # Page 1
-
-    ![HTML](/@assets/images/html.png)
-
-    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+  h1 #{page.data.title}
+  p: img(src='/@assets/images/html.png' alt='HTML')
+  p Lorem ipsum dolor sit amet, consectetur adipiscing elit.

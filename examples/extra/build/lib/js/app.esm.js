@@ -1,6 +1,5 @@
 /*!
- * Package name: my-awesome-theme
- * App title: HTML:CSS:JS
+ * HTML:CSS:JS
  */
 function o() {
   console.log("Hello, world!");

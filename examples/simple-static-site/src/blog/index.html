@@ -1,0 +1,11 @@
+---
+title: Blog
+---
+
+extends /@templates/simple-layout.pug
+
+block content
+  h1 #{page.data.title}
+  ul
+    each p in find_pages('blog', true, false)
+      li: a(href=p.url)= p.data.title

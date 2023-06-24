@@ -15,7 +15,8 @@ import jsImage from './@assets/logo/js.png'
 
 const DATA = {
   text: {
-    appTitle: import.meta.env.APP_TITLE
+    title: import.meta.env.APP_DATA.title,
+    foo: import.meta.env.APP_FOO
   },
   images: {
     html: htmlImage,

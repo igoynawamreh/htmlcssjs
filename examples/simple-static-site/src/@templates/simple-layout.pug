@@ -1,17 +1,21 @@
-block variables
-
 doctype html
 html
   head
     meta(charset='utf-8')
     meta(name='viewport' content='width=device-width, initial-scale=1')
-    title #{title ? title + ' | ' : ''}#{env.APP_TITLE}
+
+    if page.isHomepage
+      title #{data.title}
+    else
+      title #{page.data.title ? page.data.title + ' | ' : ''}#{data.title}
+
     link(rel='icon' href='/favicon.ico')
   body
     nav
-      a(href='/') Home
-      a(href='/pages/') Pages
-      a(href='/projects/') Projects
+      - var nav = find_pages('root', true, true, true)
+      each p in nav
+        - var activeClass = p.url === page.url || (page.url.startsWith(p.url) && !p.isHomepage) ? ' active' : ''
+        a(class=('nav-link' + activeClass) href=p.url)= p.data.title
 
     div
       block content

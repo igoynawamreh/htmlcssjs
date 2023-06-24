@@ -1,7 +1,9 @@
 export default {
+  base: '/',
   src: {
     root: './src',
-    public: './public'
+    public: './public',
+    data: './src/data.yml'
   },
   out: {
     site: {
@@ -20,7 +22,7 @@ export default {
   build: {
     html: {
       banner: '',
-      minify: true
+      minify: false
     },
     css: {
       filename: 'app',

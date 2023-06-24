@@ -1,10 +1,12 @@
+---
+title: Home
+---
+
 extends ./@templates/simple-layout.pug
 
-block variables
-  - var title = 'Home'
-
 block content
-  :markdown
-    # <%= env.APP_TITLE %>
-
-    ![HTML](./@assets/images/html.png) ![CSS](./@assets/images/css.png) ![JS](./@assets/images/js.png)
+  h1 #{data.title}
+  p
+    img(src='/@assets/images/html.png' alt='HTML')
+    img(src='/@assets/images/css.png' alt='CSS')
+    img(src='/@assets/images/js.png' alt='JS')

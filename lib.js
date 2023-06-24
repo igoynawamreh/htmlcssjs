@@ -2,11 +2,13 @@ import fs from 'node:fs'
 import path from 'node:path'
 import ejs from 'ejs'
 import pug from 'pug'
-import prettier from 'prettier'
+import YAML from 'yaml'
+import matter from 'gray-matter'
+import beautify from 'js-beautify'
 import browserslist from 'browserslist'
 import { minify } from 'html-minifier-terser'
 import { createRequire } from 'node:module'
-import { cfg } from './data.js'
+import { cfg } from './config.js'
 import { marked } from 'marked'
 import { loadEnv } from 'vite'
 
@@ -181,29 +183,6 @@ export function assetFileNames(
   return `${assetsDir}${dir}/${name}${hash}[extname]`
 }
 
-export function newProcessEnv(mode, processEnv, pkg) {
-  processEnv = {
-    ...processEnv,
-    ...loadEnv(mode, process.cwd(), cfg.envPrefix)
-  }
-
-  processEnv[cfg.envBaseUrlKey] = (
-    processEnv?.[cfg.envBaseUrlKey] ?? cfg.envDefaultBaseUrl
-  )
-  processEnv[cfg.envAppTitleKey] = (
-    processEnv?.[cfg.envAppTitleKey] ?? cfg.envDefaultAppTitle
-  )
-
-  if (mode === 'development') {
-    try {
-      let newBaseUrl = new URL(processEnv[cfg.envBaseUrlKey])
-      processEnv[cfg.envBaseUrlKey] = newBaseUrl.pathname
-    } catch {}
-  }
-
-  return processEnv
-}
-
 export function getMyPackageJson(path) {
   let pkg = {}
   if (fs.existsSync(path)) {
@@ -222,14 +201,216 @@ export function getPackageJson() {
   return pkg
 }
 
-export function ejsRender(template, filename, viteConfig, config, pkg) {
+export function getData(mode, config) {
+  const dataPath = path.resolve(process.cwd(), config.src.data)
+
+  let data = {}
+  if (fs.existsSync(dataPath)) {
+    data = YAML.parse(fs.readFileSync(dataPath, 'utf8'))
+  }
+
+  return data
+}
+
+export function newProcessEnv(mode, processEnv, config) {
+  const data = getData(mode, config)
+
+  processEnv = {
+    ...processEnv,
+    ...loadEnv(mode, process.cwd(), cfg.envPrefix)
+  }
+
+  processEnv[cfg.envDataKey] = data
+  processEnv[cfg.envConfigKey] = config
+
+  return processEnv
+}
+
+export function pages(
+  config,
+  parent = '',
+  oneLevel = false,
+  includeParentPage = true,
+  indexFilesOnly = false
+) {
+  const pages = []
+  let dir = path.resolve(process.cwd(), config.src.root)
+  if (parent && parent !== 'root') {
+    dir = path.resolve(process.cwd(), config.src.root, parent)
+  }
+  if (fs.existsSync(dir)) {
+    const filePaths = findFiles(dir)
+    filePaths && filePaths.length && filePaths.forEach((file) => {
+      if (htmlRegExp.test(file)) {
+        let _path = path.join('/', path.relative(config.src.root, file))
+        _path = _path.replace(/\\/g, '/')
+
+        if (_path.endsWith('/index.html')) {
+          if (_path === '/index.html') {
+            _path = '/'
+          } else {
+            _path = path.dirname(_path) + '/'
+          }
+        }
+
+        let content = fs.readFileSync(file, 'utf8')
+        let fm = matter(content)
+        fm.data.title = fm?.data?.title ?? null
+        fm.isHomepage = _path === '/'
+        fm.path = _path
+        fm.url = _path
+
+        if (
+          parent &&
+          parent !== 'root' &&
+          oneLevel &&
+          (
+            path.dirname(file).replace(/\\/g, '/').endsWith('/' + parent) ||
+            path.dirname(path.dirname(file)).replace(/\\/g, '/').endsWith('/' + parent)
+          )
+        ) {
+          if (
+            !includeParentPage &&
+            !file.replace(/\\/g, '/').endsWith('/' + parent + '/index.html')
+          ) {
+            if (indexFilesOnly && file.replace(/\\/g, '/').endsWith('/index.html')) {
+              pages.push(fm)
+            }
+            if (!indexFilesOnly) {
+              pages.push(fm)
+            }
+          }
+          if (includeParentPage) {
+            if (indexFilesOnly && file.replace(/\\/g, '/').endsWith('/index.html')) {
+              pages.push(fm)
+            }
+            if (!indexFilesOnly) {
+              pages.push(fm)
+            }
+          }
+        }
+
+        if (parent && parent !== 'root' && !oneLevel) {
+          if (
+            !includeParentPage &&
+            !file.replace(/\\/g, '/').endsWith('/' + parent + '/index.html')
+          ) {
+            if (indexFilesOnly && file.replace(/\\/g, '/').endsWith('/index.html')) {
+              pages.push(fm)
+            }
+            if (!indexFilesOnly) {
+              pages.push(fm)
+            }
+          }
+          if (includeParentPage) {
+            if (indexFilesOnly && file.replace(/\\/g, '/').endsWith('/index.html')) {
+              pages.push(fm)
+            }
+            if (!indexFilesOnly) {
+              pages.push(fm)
+            }
+          }
+        }
+
+        if (
+          parent === 'root' &&
+          oneLevel &&
+          (
+            path.dirname(file).replace(/\\/g, '/').endsWith('/' + path.basename(config.src.root)) ||
+            path.dirname(path.dirname(file)).replace(/\\/g, '/').endsWith('/' + path.basename(config.src.root))
+          )
+        ) {
+          if (
+            !includeParentPage &&
+            !file.replace(/\\/g, '/').endsWith('/' + path.basename(config.src.root) + '/index.html')
+          ) {
+            if (indexFilesOnly && file.replace(/\\/g, '/').endsWith('/index.html')) {
+              pages.push(fm)
+            }
+            if (!indexFilesOnly) {
+              pages.push(fm)
+            }
+          }
+          if (includeParentPage) {
+            if (indexFilesOnly && file.replace(/\\/g, '/').endsWith('/index.html')) {
+              pages.push(fm)
+            }
+            if (!indexFilesOnly) {
+              pages.push(fm)
+            }
+          }
+        }
+
+        if (!parent && !oneLevel) {
+          if (indexFilesOnly && file.replace(/\\/g, '/').endsWith('/index.html')) {
+            pages.push(fm)
+          }
+          if (!indexFilesOnly) {
+            pages.push(fm)
+          }
+        }
+      }
+    })
+  }
+  return pages.sort((a, b) => a.url.localeCompare(b.url, undefined, { numeric: true }))
+}
+
+export function page(config, pathToPage) {
+  let file = path.resolve(process.cwd(), config.src.root, pathToPage)
+  if (fs.existsSync(file)) {
+    let _path = path.join('/', path.relative(config.src.root, pathToPage))
+    _path = _path.replace(/\\/g, '/')
+
+    if (_path.endsWith('/index.html')) {
+      if (_path === '/index.html') {
+        _path = '/'
+      } else {
+        _path = path.dirname(_path) + '/'
+      }
+    }
+
+    let content = fs.readFileSync(file, 'utf8')
+    let fm = matter(content)
+    fm.data.title = fm?.data?.title ?? null
+    fm.isHomepage = _path === '/'
+    fm.path = _path
+    fm.url = _path
+
+    return fm
+  }
+  return {}
+}
+
+export function ejsRender(
+  template,
+  filename,
+  viteConfig,
+  config,
+  pkg,
+  fm = {}
+) {
   template = ejs.render(
     template,
     {
       NODE_ENV: viteConfig.mode,
       isDev: viteConfig.mode === 'development',
+      config: config,
       env: process.env,
-      pkg: pkg
+      pkg: pkg,
+      data: getData(viteConfig.mode, config),
+      page: fm,
+      pages: pages(config),
+      find_page: function (pathToPage) {
+        return page(config, pathToPage)
+      },
+      find_pages: function (
+        parent = 'pages',
+        oneLevel = false,
+        includeParentPage = true,
+        indexFilesOnly = false
+      ) {
+        return pages(config, parent, oneLevel, includeParentPage, indexFilesOnly)
+      }
     },
     {
       root: path.resolve(path.join(process.cwd(), config.src.root)),
@@ -241,21 +422,43 @@ export function ejsRender(template, filename, viteConfig, config, pkg) {
   return template
 }
 
-export function pugRender(template, filename, viteConfig, config, pkg) {
+export function pugRender(
+  template,
+  filename,
+  viteConfig,
+  config,
+  pkg,
+  fm = {}
+) {
   template = pug.render(template, {
     basedir: config.src.root,
     filename: filename,
+    config: config,
     env: process.env,
     pkg: pkg,
+    data: getData(viteConfig.mode, config),
+    page: fm,
+    pages: pages(config),
+    find_page: function (pathToPage) {
+      return page(config, pathToPage)
+    },
+    find_pages: function (
+      parent = 'pages',
+      oneLevel = false,
+      includeParentPage = true,
+      indexFilesOnly = false
+    ) {
+      return pages(config, parent, oneLevel, includeParentPage, indexFilesOnly)
+    },
     filters: {
       'ejs': function(text, _options) {
-        return ejsRender(text, filename, viteConfig, config, pkg)
+        return ejsRender(text, filename, viteConfig, config, pkg, fm)
       },
       'markdown': function(text, options) {
         if (options?.pug) {
-          text = pugRender(text, filename, viteConfig, config, pkg)
+          text = pugRender(text, filename, viteConfig, config, pkg, fm)
         }
-        return markdownRender(text, filename, viteConfig, config, pkg)
+        return markdownRender(text, filename, viteConfig, config, pkg, fm)
       }
     }
   })
@@ -263,7 +466,14 @@ export function pugRender(template, filename, viteConfig, config, pkg) {
   return template
 }
 
-export function markdownRender(content, filename, viteConfig, config, pkg) {
+export function markdownRender(
+  content,
+  filename,
+  viteConfig,
+  config,
+  pkg,
+  fm = {}
+) {
   marked.setOptions({
     async: false,
     baseUrl: '',
@@ -287,7 +497,7 @@ export function markdownRender(content, filename, viteConfig, config, pkg) {
     xhtml: false
   })
 
-  content = ejsRender(content, filename, viteConfig, config, pkg)
+  content = ejsRender(content, filename, viteConfig, config, pkg, fm)
   content = marked.parse(content)
 
   return content
@@ -307,7 +517,7 @@ export function minifyHTML(html) {
 }
 
 export function createBanner(file, viteConfig, config, pkg) {
-  let content = fs.readFileSync(file, { encoding: 'utf8' })
+  let content = fs.readFileSync(file, 'utf8')
   let template = ''
   if (htmlRegExp.test(file)) template = config.build.html.banner ?? ''
   if (cssRegExp.test(file)) template = config.build.css.banner ?? ''
@@ -331,11 +541,36 @@ export function htmlcssjsSite(config, pkg) {
     transformIndexHtml: {
       enforce: 'pre',
       transform (html, ctx) {
+        let base = config.base
+        if (viteConfig.mode === 'development') {
+          try {
+            let newBase = new URL(base)
+            base = newBase.pathname
+          } catch {}
+        }
+
+        let _path = ctx.path
+        if (_path.endsWith('/index.html')) {
+          if (_path === '/index.html') {
+            _path = '/'
+          } else {
+            _path = path.dirname(_path) + '/'
+          }
+        }
+
+        let fm = matter(html)
+        fm.data.title = fm?.data?.title ?? null
+        fm.isHomepage = _path === '/'
+        fm.path = _path
+        fm.url = _path
+
+        html = html.replace(/\s*---.*?---\s*/s, '')
+
         try {
-          html = pugRender(html, ctx.filename, viteConfig, config, pkg)
+          html = pugRender(html, ctx.filename, viteConfig, config, pkg, fm)
         } catch {}
 
-        html = ejsRender(html, ctx.filename, viteConfig, config, pkg)
+        html = ejsRender(html, ctx.filename, viteConfig, config, pkg, fm)
 
         html = html.replace(
           new RegExp(`(^|\\n)([ \\t]*)<:markdown:>([\\s\\S]*?)</:markdown:>`, 'g'),
@@ -353,7 +588,7 @@ export function htmlcssjsSite(config, pkg) {
               }
               // console.log('<pre>' + mdContent + '</pre>');
               return markdownRender(
-                mdContent, ctx.filename, viteConfig, config, pkg
+                mdContent, ctx.filename, viteConfig, config, pkg, fm
               )
             }
             return ''
@@ -363,7 +598,6 @@ export function htmlcssjsSite(config, pkg) {
         html = html.replace(
           /(<a\s*[^>]*(href="([^>^\"]*)")[^>]*>)([^<]+)(<\/a>)/gi,
           (full, start, href, url, text, end) => {
-            const base = process.env.APP_BASE_URL
             const filename = ctx.filename.replace(/\\/g, '/')
             const cwd = process.cwd().replace(/\\/g, '/')
             const fileDir = path.dirname(filename)
@@ -385,7 +619,11 @@ export function htmlcssjsSite(config, pkg) {
                 newUrl = newUrl + '/'
               }
               if (newUrl.endsWith('/index.html')) {
-                newUrl = path.dirname(newUrl) + '/'
+                if (newUrl === './index.html' || newUrl === '/index.html') {
+                  newUrl = '/'
+                } else {
+                  newUrl = path.dirname(newUrl) + '/'
+                }
               }
               if (newUrl.endsWith('//')) {
                 newUrl = newUrl.slice(0, -2)
@@ -401,7 +639,11 @@ export function htmlcssjsSite(config, pkg) {
                 newUrl = newUrl + '/'
               }
               if (newUrl.endsWith('/index.html')) {
-                newUrl = path.dirname(newUrl) + '/'
+                if (newUrl === './index.html' || newUrl === '/index.html') {
+                  newUrl = '/'
+                } else {
+                  newUrl = path.dirname(newUrl) + '/'
+                }
               }
               if (newUrl.endsWith('//')) {
                 newUrl = newUrl.slice(0, -2)
@@ -413,18 +655,43 @@ export function htmlcssjsSite(config, pkg) {
           }
         )
 
-        html = prettier.format(html, {
-          parser: 'html',
-          printWidth: 1000
+        html = beautify.html(html, {
+          end_with_newline: false,
+          eol: '\n',
+          extra_liners: [],
+          indent_char: ' ',
+          indent_inner_html: true,
+          indent_size: 2,
+          indent_with_tabs: false,
+          css: {
+            end_with_newline: false,
+            eol: '\n',
+            indent_char: ' ',
+            indent_size: 2,
+            indent_with_tabs: false,
+            newline_between_rules: false,
+            selector_separator_newline: true,
+            space_around_combinator: true
+          },
+          js: {
+            end_with_newline: false,
+            eol: '\n',
+            indent_char: ' ',
+            indent_size: 2,
+            indent_with_tabs: false,
+            preserve_newlines: false,
+            space_after_anon_function: true,
+            space_after_named_function: false,
+            space_in_empty_paren: false,
+            space_in_paren: false
+          }
         })
-
-        html = html.replace(/\s\/>/g, '>')
 
         return html
       }
     },
     closeBundle() {
-      let dir = path.resolve(process.cwd(), config.out.site.dest)
+      const dir = path.resolve(process.cwd(), config.out.site.dest)
       if (fs.existsSync(dir)) {
         const filePaths = findFiles(dir)
         filePaths && filePaths.length && filePaths.forEach((file) => {
@@ -445,7 +712,7 @@ export function htmlcssjsDist(config, pkg) {
       viteConfig = resolvedConfig
     },
     closeBundle() {
-      let dir = path.resolve(process.cwd(), config.out.dist.dest)
+      const dir = path.resolve(process.cwd(), config.out.dist.dest)
       if (fs.existsSync(dir)) {
         const filePaths = findFiles(dir)
         filePaths && filePaths.length && filePaths.forEach((file) => {
@@ -466,7 +733,7 @@ export function htmlcssjsLib(config, pkg) {
       viteConfig = resolvedConfig
     },
     closeBundle() {
-      let dir = path.resolve(process.cwd(), config.out.lib.dest)
+      const dir = path.resolve(process.cwd(), config.out.lib.dest)
       if (fs.existsSync(dir)) {
         const filePaths = findFiles(dir)
         filePaths && filePaths.length && filePaths.forEach((file) => {

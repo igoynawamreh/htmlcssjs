@@ -1,0 +1,21 @@
+---
+title: Foo
+---
+
+extends /@templates/simple-layout.pug
+
+block content
+  h1 #{page.data.title}
+  :markdown
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+
+    ```js
+    console.log('M')
+    console.log('A')
+    console.log('R')
+    console.log('K')
+    console.log('D')
+    console.log('O')
+    console.log('W')
+    console.log('N')
+    ```

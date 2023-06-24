@@ -4,7 +4,7 @@ import {
   cfg,
   config,
   pkg
-} from './data'
+} from './config'
 import {
   assetFileNames,
   browserslistToEsbuild,
@@ -28,7 +28,7 @@ if (
 }
 
 export default ({ mode }) => {
-  process.env = newProcessEnv(mode, process.env, pkg)
+  process.env = newProcessEnv(mode, process.env, config)
   return defineConfig({
     appType: 'mpa',
     base: './',

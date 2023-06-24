@@ -1,1 +1,1 @@
-(function(n){typeof define=="function"&&define.amd?define(n):n()})(function(){"use strict";const n="",e="";console.log("HTML:CSS:JS")});
+(function(t){typeof define=="function"&&define.amd?define(t):t()})(function(){"use strict";const t="",e="";console.log("HTML:CSS:JS")});

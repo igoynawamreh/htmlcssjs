@@ -1,7 +1,9 @@
 export default {
+  base: '/',
   src: {
     root: './src',
-    public: './public'
+    public: './public',
+    data: './src/data.yml'
   },
   out: {
     site: {

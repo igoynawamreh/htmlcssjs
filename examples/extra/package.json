@@ -1,5 +1,4 @@
 {
-  "name": "my-awesome-theme",
   "type": "module",
   "scripts": {
     "dev": "htmlcssjs dev",
