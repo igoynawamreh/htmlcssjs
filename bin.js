@@ -3,7 +3,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import spawn from 'cross-spawn'
-import { config } from './data.js'
+import { config } from './config.js'
 import { getMyPackageJson } from './lib.js'
 
 const argv = process.argv
