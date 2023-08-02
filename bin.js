@@ -15,7 +15,7 @@ const viteConfigLib = `node_modules/${myPkg.name}/vite.config.lib.js`
 const command = argv?.[2]
 const allowed = (
   command === 'dev' ||
-  command === 'prod' ||
+  command === 'build' ||
   command === 'preview' ||
   command === 'vite'
 )
@@ -39,7 +39,7 @@ if ((argv.length > 3 && command !== 'vite') || !allowed) {
   console.log('Available commands:')
   console.log()
   console.log(`$ ${myPkg.name} dev (Start dev server and rebuilds when source files have changed)`)
-  console.log(`$ ${myPkg.name} prod (Build for production)`)
+  console.log(`$ ${myPkg.name} build (Build for production)`)
   console.log(`$ ${myPkg.name} preview (Locally preview production build)`)
   console.log(`$ ${myPkg.name} vite (Run Vite commands)`)
   process.exit(1)
@@ -106,7 +106,7 @@ if (command === 'dev') {
   }
 }
 
-if (command === 'prod') {
+if (command === 'build') {
   if (fs.existsSync(htmlIndex) && config.out.site !== false) {
     spawn('vite', ['build', '--config', viteConfigSite], {
       stdio: 'inherit',

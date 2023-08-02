@@ -21,5 +21,5 @@ npm install htmlcssjs sass stylus less autoprefixer --save-dev
 Once the installation is done, you can run:
 
 - `htmlcssjs dev`: Start dev server and rebuilds when source files have changed.
-- `htmlcssjs prod`: Build for production.
+- `htmlcssjs build`: Build for production.
 - `htmlcssjs preview`: Locally preview production build.

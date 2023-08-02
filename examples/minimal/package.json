@@ -2,7 +2,7 @@
   "type": "module",
   "scripts": {
     "dev": "htmlcssjs dev",
-    "prod": "htmlcssjs prod",
+    "build": "htmlcssjs build",
     "preview": "htmlcssjs preview"
   }
 }

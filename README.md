@@ -26,7 +26,7 @@ npm install htmlcssjs --save-dev
 | Command | Description |
 | ------- | ----------- |
 | `htmlcssjs dev` | Start dev (and server if `index.html` entry point exists) and rebuilds when source files have changed. |
-| `htmlcssjs prod` | Build for production. |
+| `htmlcssjs build` | Build for production. |
 | `htmlcssjs preview` | Locally preview production build (if `index.html` entry point exists). It's an easy way to check if the production build looks OK in your local environment. |
 | `htmlcssjs vite` | Run Vite commands. |
 
@@ -37,7 +37,7 @@ npm install htmlcssjs --save-dev
   "name": "my-awesome-theme",
   "scripts": {
     "dev": "htmlcssjs dev",
-    "prod": "htmlcssjs prod",
+    "build": "htmlcssjs build",
     "preview": "htmlcssjs preview",
     "custom-example": "htmlcssjs vite build --config node_modules/htmlcssjs/vite.config.site.js"
   },
@@ -528,7 +528,7 @@ block content
 
 ## Using Library Mode
 
-Create `index.lib.js` file in the `src` directory to create library. Now, the `htmlcssjs prod` command will produces `build/lib` directory.
+Create `index.lib.js` file in the `src` directory to create library. Now, the `htmlcssjs build` command will produces `build/lib` directory.
 
 By default, the library mode produces `ES` and `UMD` format. You can override the default config in [`htmlcssjs.config.js`](#htmlcssjsconfigjs) to change the formats:
 

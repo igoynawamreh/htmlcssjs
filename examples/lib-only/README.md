@@ -21,4 +21,4 @@ npm install htmlcssjs --save-dev
 Once the installation is done, you can run:
 
 - `htmlcssjs dev`: Start dev and rebuilds when source files have changed.
-- `htmlcssjs prod`: Build for production.
+- `htmlcssjs build`: Build for production.
