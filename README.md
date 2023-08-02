@@ -228,11 +228,11 @@ console.log(import.meta.env.APP_PKG.key_name) // package.json
 
 ### Using YAML Front Matter Block in HTML Page
 
-You can use YAML front matter block in HTML page and use the data using `page` or `find_page()` variable. You can also get data from all pages using `pages` or `find_pages()` variable:
+You can use YAML front matter block in HTML page and use the data using `page` or `find_page()` variable. You can also get data from children pages or all pages using `children` or `find_pages()` variable:
 
 ```js
-find_page(pathToPage) // 'path/to/page.html'
-find_pages(parent = 'pages', oneLevel = false, includeParentPage = true, indexFilesOnly = false)
+find_page(pathToPage) // Example: 'path/to/page.html'
+find_pages({ dir: 'pages', deep: false, dirPage: false, indexOnly: false })
 ```
 
 Predefined variables:
@@ -257,7 +257,7 @@ Content
 
 - `page.data.title`: Page Title
 - `page.content`: Content
-- `page.url`: `/index.html`
+- `page.url`: `/`
 - `page.isHomepage`: `true`
 - `page.isEmpty`: `false`
 
@@ -293,7 +293,7 @@ title: Pages
 <h1><%= page.data.title %></h1>
 
 <ul>
-  <% find_pages('pages', true, false).forEach((p) => { %>
+  <% children.forEach((p) => { %>
     <li>
       <a href="<%= p.url %>"><%= p.data.title %></a>
     </li>
@@ -308,7 +308,7 @@ title: Pages
 title: Home
 ---
 
-<% var nav = find_pages('root', true, true, true) %>
+<% var nav = find_pages({ dir: 'root', deep: false, dirPage: true, indexOnly: true }) %>
 
 <nav>
   <% nav.forEach((p) => { %>

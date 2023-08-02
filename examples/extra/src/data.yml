@@ -5,3 +5,5 @@ links:
     url: https://example.com/1
   - text: Link 2
     url: https://example.com/2
+  - text: Link 3
+    url: https://example.com/3

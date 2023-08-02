@@ -228,19 +228,27 @@ export function newProcessEnv(mode, processEnv, config) {
 
 export function pages(
   config,
-  parent = '',
-  oneLevel = false,
-  includeParentPage = true,
-  indexFilesOnly = false
+  dir = '',
+  deep = false,
+  dirPage = true,
+  indexOnly = false
 ) {
   const pages = []
-  let dir = path.resolve(process.cwd(), config.src.root)
-  if (parent && parent !== 'root') {
-    dir = path.resolve(process.cwd(), config.src.root, parent)
+
+  let targetDir = path.resolve(process.cwd(), config.src.root)
+  targetDir = targetDir.replace(/\\/g, '/')
+  dir = dir.replace(/\\/g, '/')
+  dir = dir.replace(targetDir + '/', '')
+  if (dir === targetDir) {
+    dir = 'root'
   }
-  if (fs.existsSync(dir)) {
-    const filePaths = findFiles(dir)
-    filePaths && filePaths.length && filePaths.forEach((file) => {
+  if (dir && dir !== 'root') {
+    targetDir = path.resolve(process.cwd(), config.src.root, dir)
+  }
+
+  if (fs.existsSync(targetDir)) {
+    const filePaths = findFiles(targetDir)
+    filePaths?.length && filePaths.forEach((file) => {
       if (htmlRegExp.test(file)) {
         let _path = path.join('/', path.relative(config.src.root, file))
         _path = _path.replace(/\\/g, '/')
@@ -261,91 +269,91 @@ export function pages(
         fm.url = _path
 
         if (
-          parent &&
-          parent !== 'root' &&
-          oneLevel &&
+          dir &&
+          dir !== 'root' &&
+          !deep &&
           (
-            path.dirname(file).replace(/\\/g, '/').endsWith('/' + parent) ||
-            path.dirname(path.dirname(file)).replace(/\\/g, '/').endsWith('/' + parent)
+            path.dirname(file).replace(/\\/g, '/').endsWith('/' + dir) ||
+            path.dirname(path.dirname(file)).replace(/\\/g, '/').endsWith('/' + dir)
           )
         ) {
           if (
-            !includeParentPage &&
-            !file.replace(/\\/g, '/').endsWith('/' + parent + '/index.html')
+            !dirPage &&
+            !file.replace(/\\/g, '/').endsWith('/' + dir + '/index.html')
           ) {
-            if (indexFilesOnly && file.replace(/\\/g, '/').endsWith('/index.html')) {
+            if (indexOnly && file.replace(/\\/g, '/').endsWith('/index.html')) {
               pages.push(fm)
             }
-            if (!indexFilesOnly) {
+            if (!indexOnly) {
               pages.push(fm)
             }
           }
-          if (includeParentPage) {
-            if (indexFilesOnly && file.replace(/\\/g, '/').endsWith('/index.html')) {
+          if (dirPage) {
+            if (indexOnly && file.replace(/\\/g, '/').endsWith('/index.html')) {
               pages.push(fm)
             }
-            if (!indexFilesOnly) {
+            if (!indexOnly) {
               pages.push(fm)
             }
           }
         }
 
-        if (parent && parent !== 'root' && !oneLevel) {
+        if (dir && dir !== 'root' && deep) {
           if (
-            !includeParentPage &&
-            !file.replace(/\\/g, '/').endsWith('/' + parent + '/index.html')
+            !dirPage &&
+            !file.replace(/\\/g, '/').endsWith('/' + dir + '/index.html')
           ) {
-            if (indexFilesOnly && file.replace(/\\/g, '/').endsWith('/index.html')) {
+            if (indexOnly && file.replace(/\\/g, '/').endsWith('/index.html')) {
               pages.push(fm)
             }
-            if (!indexFilesOnly) {
+            if (!indexOnly) {
               pages.push(fm)
             }
           }
-          if (includeParentPage) {
-            if (indexFilesOnly && file.replace(/\\/g, '/').endsWith('/index.html')) {
+          if (dirPage) {
+            if (indexOnly && file.replace(/\\/g, '/').endsWith('/index.html')) {
               pages.push(fm)
             }
-            if (!indexFilesOnly) {
+            if (!indexOnly) {
               pages.push(fm)
             }
           }
         }
 
         if (
-          parent === 'root' &&
-          oneLevel &&
+          dir === 'root' &&
+          !deep &&
           (
             path.dirname(file).replace(/\\/g, '/').endsWith('/' + path.basename(config.src.root)) ||
             path.dirname(path.dirname(file)).replace(/\\/g, '/').endsWith('/' + path.basename(config.src.root))
           )
         ) {
           if (
-            !includeParentPage &&
+            !dirPage &&
             !file.replace(/\\/g, '/').endsWith('/' + path.basename(config.src.root) + '/index.html')
           ) {
-            if (indexFilesOnly && file.replace(/\\/g, '/').endsWith('/index.html')) {
+            if (indexOnly && file.replace(/\\/g, '/').endsWith('/index.html')) {
               pages.push(fm)
             }
-            if (!indexFilesOnly) {
+            if (!indexOnly) {
               pages.push(fm)
             }
           }
-          if (includeParentPage) {
-            if (indexFilesOnly && file.replace(/\\/g, '/').endsWith('/index.html')) {
+          if (dirPage) {
+            if (indexOnly && file.replace(/\\/g, '/').endsWith('/index.html')) {
               pages.push(fm)
             }
-            if (!indexFilesOnly) {
+            if (!indexOnly) {
               pages.push(fm)
             }
           }
         }
 
-        if (!parent && !oneLevel) {
-          if (indexFilesOnly && file.replace(/\\/g, '/').endsWith('/index.html')) {
+        if (!dir && deep) {
+          if (indexOnly && file.replace(/\\/g, '/').endsWith('/index.html')) {
             pages.push(fm)
           }
-          if (!indexFilesOnly) {
+          if (!indexOnly) {
             pages.push(fm)
           }
         }
@@ -389,6 +397,8 @@ export function ejsRender(
   pkg,
   fm = {}
 ) {
+  const dir = path.resolve(process.cwd(), config.src.root, path.dirname(filename))
+
   template = ejs.render(
     template,
     {
@@ -399,17 +409,22 @@ export function ejsRender(
       pkg: pkg,
       data: getData(viteConfig.mode, config),
       page: fm,
-      pages: pages(config),
+      children: pages(config, dir, false, false, true),
       find_page: function (pathToPage) {
         return page(config, pathToPage)
       },
-      find_pages: function (
-        parent = 'pages',
-        oneLevel = false,
-        includeParentPage = true,
-        indexFilesOnly = false
-      ) {
-        return pages(config, parent, oneLevel, includeParentPage, indexFilesOnly)
+      find_pages: function (options = {}) {
+        options.dir = options?.dir ?? 'pages'
+        options.deep = options?.deep ?? false
+        options.dirPage = options?.dirPage ?? false
+        options.indexOnly = options?.indexOnly ?? false
+        return pages(
+          config,
+          options.dir,
+          options.deep,
+          options.dirPage,
+          options.indexOnly
+        )
       }
     },
     {
@@ -430,6 +445,8 @@ export function pugRender(
   pkg,
   fm = {}
 ) {
+  const dir = path.resolve(process.cwd(), config.src.root, path.dirname(filename))
+
   template = pug.render(template, {
     basedir: config.src.root,
     filename: filename,
@@ -438,17 +455,22 @@ export function pugRender(
     pkg: pkg,
     data: getData(viteConfig.mode, config),
     page: fm,
-    pages: pages(config),
+    children: pages(config, dir, false, false, true),
     find_page: function (pathToPage) {
       return page(config, pathToPage)
     },
-    find_pages: function (
-      parent = 'pages',
-      oneLevel = false,
-      includeParentPage = true,
-      indexFilesOnly = false
-    ) {
-      return pages(config, parent, oneLevel, includeParentPage, indexFilesOnly)
+    find_pages: function (options = {}) {
+      options.dir = options?.dir ?? 'pages'
+      options.deep = options?.deep ?? false
+      options.dirPage = options?.dirPage ?? false
+      options.indexOnly = options?.indexOnly ?? false
+      return pages(
+        config,
+        options.dir,
+        options.deep,
+        options.dirPage,
+        options.indexOnly
+      )
     },
     filters: {
       'ejs': function(text, _options) {
@@ -580,13 +602,11 @@ export function htmlcssjsSite(config, pkg) {
                 // Remove outer HTML indent
                 mdContent = mdContent.split('\n' + dent).join('\n');
               }
-              // console.log('<pre>' + mdContent + '</pre>');
               let m = /^\n([ \t]+)/.exec(mdContent);
               if (m && m[1]) {
                 // Remove inner HTML indent
                 mdContent = mdContent.split('\n' + m[1]).join('\n');
               }
-              // console.log('<pre>' + mdContent + '</pre>');
               return markdownRender(
                 mdContent, ctx.filename, viteConfig, config, pkg, fm
               )

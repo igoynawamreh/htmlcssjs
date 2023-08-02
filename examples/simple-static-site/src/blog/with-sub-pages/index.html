@@ -7,5 +7,5 @@ extends /@templates/simple-layout.pug
 block content
   h1 #{page.data.title}
   ul
-    each p in find_pages('blog/with-sub-pages', true, false)
+    each p in children
       li: a(href=p.url)= p.data.title

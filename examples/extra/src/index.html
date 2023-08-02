@@ -16,5 +16,9 @@ block content
     each link in data.links
       li: a(href=link.url)= link.text
 
+  ul
+    each p in children
+      li: a(href=p.url)= p.data.title
+
   :ejs
     <%- include('./@templates/example-alert.ejs') -%>

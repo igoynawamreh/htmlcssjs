@@ -12,7 +12,7 @@ html
     link(rel='icon' href='/favicon.ico')
   body
     nav
-      - var nav = find_pages('root', true, true, true)
+      - var nav = find_pages({ dir: 'root', deep: false, dirPage: true, indexOnly: true })
       each p, i in nav
         - var activeClass = p.url === page.url || (page.url.startsWith(p.url) && !p.isHomepage) ? ' active' : ''
         a(class=('nav-link' + activeClass) href=p.url)= p.data.title

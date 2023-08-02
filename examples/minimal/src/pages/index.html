@@ -7,7 +7,7 @@ title: Pages
 <h1><%= page.data.title %></h1>
 
 <ul>
-  <% find_pages('pages', true, false).forEach((p) => { %>
+  <% children.forEach((p) => { %>
     <li>
       <a href="<%= p.url %>"><%= p.data.title %></a>
     </li>

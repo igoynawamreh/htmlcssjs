@@ -4,9 +4,9 @@ title: Home
 
 <%
 var blogIndex = find_page('blog/index.html')
-var blogChildren = find_pages('blog', false, false)
+var blogChildren = find_pages({ dir: 'blog', deep: false, dirPage: false, indexOnly: false })
 var pagesIndex = find_page('pages/index.html')
-var pagesChildren = find_pages('pages', false, false)
+var pagesChildren = find_pages({ dir: 'pages', deep: false, dirPage: false, indexOnly: false })
 %>
 
 <%- include('./@templates/before.ejs') -%>
@@ -27,7 +27,11 @@ var pagesChildren = find_pages('pages', false, false)
   <% }) %>
 </ul>
 
-<h2><%= blogIndex.data.title %></h2>
+<h2>
+  <a href="<%= blogIndex.url %>">
+    <%= blogIndex.data.title %>
+  </a>
+</h2>
 <ul>
   <% blogChildren.forEach((p) => { %>
     <li>
@@ -36,7 +40,11 @@ var pagesChildren = find_pages('pages', false, false)
   <% }) %>
 </ul>
 
-<h2><%= pagesIndex.data.title %></h2>
+<h2>
+  <a href="<%= pagesIndex.url %>">
+    <%= pagesIndex.data.title %>
+  </a>
+</h2>
 <ul>
   <% pagesChildren.forEach((p) => { %>
     <li>
