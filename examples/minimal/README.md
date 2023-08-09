@@ -20,6 +20,6 @@ npm install htmlcssjs --save-dev
 
 Once the installation is done, you can run:
 
-- `htmlcssjs dev`: Start dev server and rebuilds when source files have changed.
-- `htmlcssjs build`: Build for production.
-- `htmlcssjs preview`: Locally preview production build.
+- `npm run dev`: Start dev server and rebuilds when source files have changed.
+- `npm run build`: Build for production.
+- `npm run preview`: Locally preview production build.
