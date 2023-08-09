@@ -27,6 +27,6 @@ Thumbs.db
 .komodotools
 *.komodoproject
 
-# Files and folders to ignore
+# Folders and files to ignore
 node_modules
 package-lock.json
