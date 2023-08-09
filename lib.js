@@ -71,28 +71,22 @@ export function findFiles(dir) {
   }
 }
 
-export function entryFileNames(
-  chunkInfo,
-  config,
-  type = 'site'
-) {
+export function entryFileNames(chunkInfo, config, type = 'site') {
   let assetsDir = type === 'site' ? cfg.assetsDir + '/' : ''
   let name = '[name]'
   let hash = ''
   let format = ''
 
-  if (
-    type === 'site' ||
-    (type === 'dist' && config.build.js.hash) ||
-    (type === 'lib' && config.build.js.hash)
-  ) {
+  if (type === 'site') {
+    hash = '-[hash]'
+  }
+  if ((type === 'dist' || type === 'lib') && config.build.js.hash) {
     hash = '-[hash]'
   }
 
   if (type === 'site') {
-    name = 'script'
+    name = config.build.js.filename
   }
-
   if ((type === 'dist' || type === 'lib') && chunkInfo.isEntry) {
     name = config.build.js.filename
   }
@@ -100,28 +94,22 @@ export function entryFileNames(
   return `${assetsDir}js/${name}${hash}${format}.js`
 }
 
-export function chunkFileNames(
-  chunkInfo,
-  config,
-  type = 'site'
-) {
+export function chunkFileNames(chunkInfo, config, type = 'site') {
   let assetsDir = type === 'site' ? cfg.assetsDir + '/' : ''
   let name = '[name]'
   let hash = ''
   let format = ''
 
-  if (
-    type === 'site' ||
-    (type === 'dist' && config.build.js.hash) ||
-    (type === 'lib' && config.build.js.hash)
-  ) {
+  if (type === 'site') {
+    hash = '-[hash]'
+  }
+  if ((type === 'dist' || type === 'lib') && config.build.js.hash) {
     hash = '-[hash]'
   }
 
   if (type === 'site') {
-    name = 'script'
+    name = config.build.js.filename
   }
-
   if ((type === 'dist' || type === 'lib') && chunkInfo.isEntry) {
     name = config.build.js.filename
   }
@@ -129,11 +117,7 @@ export function chunkFileNames(
   return `${assetsDir}js/${name}${hash}${format}.js`
 }
 
-export function assetFileNames(
-  assetInfo,
-  config,
-  type = 'site'
-) {
+export function assetFileNames(assetInfo, config, type = 'site') {
   const imagesRegExp = new RegExp(/\.(png|jpg|jpeg|jfif|pjpeg|pjp|gif|svg|ico|webp|avif)$/i)
   const mediaRegExp = new RegExp(/\.(mp4|webm|ogg|mp3|wmv|flac|aac)$/i)
   const fontsRegExp = new RegExp(/\.(woff|woff2|eot|ttf|otf)$/i)
@@ -159,24 +143,17 @@ export function assetFileNames(
   let name = '[name]'
   let hash = ''
 
-  if (
-    type === 'site' ||
-    (dir === 'css' && type === 'dist' && config.build.css.hash) ||
-    (dir === 'css' && type === 'lib' && config.build.css.hash) ||
-    (
-      dir !== 'css' &&
-      (type === 'dist' || type === 'lib') &&
-      config.build.assets.hash
-    )
-  ) {
+  if (type === 'site') {
+    hash = '-[hash]'
+  }
+  if (dir === 'css' && (type === 'dist' || type === 'lib') && config.build.css.hash) {
+    hash = '-[hash]'
+  }
+  if (dir !== 'css' && (type === 'dist' || type === 'lib') && config.build.assets.hash) {
     hash = '-[hash]'
   }
 
-  if (type === 'site' && dir === 'css') {
-    name = 'style'
-  }
-
-  if ((type === 'dist' || type === 'lib') && dir === 'css') {
+  if (dir === 'css') {
     name = config.build.css.filename
   }
 
