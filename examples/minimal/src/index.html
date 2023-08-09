@@ -9,7 +9,7 @@ var pagesIndex = find_page('pages/index.html')
 var pagesChildren = find_pages({ dir: 'pages', deep: false, dirPage: false, indexOnly: false })
 %>
 
-<%- include('./@templates/before.ejs') -%>
+<%- include('/@templates/before.ejs') -%>
 
 <h1><%= data.title %></h1>
 
@@ -52,3 +52,5 @@ var pagesChildren = find_pages({ dir: 'pages', deep: false, dirPage: false, inde
     </li>
   <% }) %>
 </ul>
+
+<%- include('/@templates/after.ejs') -%>
